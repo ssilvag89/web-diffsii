@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <script src="env-config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratación - DiffSii</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-page {
+            padding: 120px 5% 100px;
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--glass-border);
+            z-index: 1;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-main);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .step.active {
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .step.completed {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .form-step {
+            display: none;
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 18px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 15px 15px 15px 50px !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 12px !important;
+            color: #fff !important;
+            font-size: 1rem !important;
+        }
+
+        .input-container input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 15px var(--primary-glow) !important;
+            outline: none;
+        }
+
+        .input-container input:focus + i {
+            color: var(--primary);
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo-wrapper">
+            <a href="index.html">
+                <img src="logo.png" alt="DiffSii Logo" class="logo-img" style="height: 40px; width: auto; transform: scale(3.4); transform-origin: left center;">
+            </a>
+        </div>
+        <a href="index.html" class="btn-nav">X Cancelar</a>
+    </nav>
+
+    <main class="checkout-page">
+        <div class="step-indicator">
+            <div class="step active" id="step-1-btn">1</div>
+            <div class="step" id="step-2-btn">2</div>
+            <div class="step" id="step-3-btn">3</div>
+        </div>
+
+        <!-- Paso 1: Datos de Contacto -->
+        <div class="form-step active" id="step-1">
+            <h2 style="margin-bottom: 10px;">Datos de Contacto</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Comencemos con tu información básica.</p>
+            
+            <div class="input-container">
+                <i data-lucide="user"></i>
+                <input type="text" id="contact-name" placeholder="Nombre Completo (Ej: Juan Pérez)" required>
+            </div>
+            <div class="input-container">
+                <i data-lucide="mail"></i>
+                <input type="email" id="contact-email" placeholder="Correo Electrónico (juan@empresa.com)" required>
+            </div>
+            <div class="input-container">
+                <i data-lucide="phone"></i>
+                <input type="tel" id="contact-phone" placeholder="Teléfono (+56 9 1234 5678)" required>
+            </div>
+            
+            <div class="error-msg" id="error-1" style="color: #ef4444; margin-bottom: 20px; display: none; font-size: 0.9rem; font-weight: 600;">⚠️ Por favor, completa todos los campos obligatorios.</div>
+            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="validateAndNext(2)">Siguiente Paso</button>
+        </div>
+
+        <!-- Paso 2: Datos de la Empresa -->
+        <div class="form-step" id="step-2">
+            <h2 style="margin-bottom: 10px;">Datos de la Empresa</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Ingresa la información para facturación.</p>
+            
+            <div class="input-container">
+                <i data-lucide="building"></i>
+                <input type="text" id="biz-name" required placeholder="Razón Social (Ej: Servicios Tecnológicos SpA)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-container">
+                    <i data-lucide="hash"></i>
+                    <input type="text" id="biz-rut" required placeholder="RUT Empresa (77.654.321-0)">
+                </div>
+                <div class="input-container">
+                    <i data-lucide="activity"></i>
+                    <input type="text" id="biz-acteco" required placeholder="Acteco">
+                </div>
+            </div>
+            <div class="input-container">
+                <i data-lucide="map-pin"></i>
+                <input type="text" id="biz-address" required placeholder="Dirección (Av. Providencia 1234)">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-container">
+                    <i data-lucide="map"></i>
+                    <input type="text" id="biz-commune" required placeholder="Comuna">
+                </div>
+                <div class="input-container">
+                    <i data-lucide="navigation"></i>
+                    <input type="text" id="biz-city" required placeholder="Ciudad">
+                </div>
+            </div>
+            
+            <div class="error-msg" id="error-2" style="color: #ef4444; margin-bottom: 20px; display: none; font-size: 0.9rem; font-weight: 600;">⚠️ Todos los datos de la empresa son necesarios para facturación.</div>
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
+                <button class="btn-nav" style="flex: 1;" onclick="nextStep(1)">Atrás</button>
+                <button class="btn-primary" style="flex: 2;" onclick="validateAndNext(3)">Revisar Resumen</button>
+            </div>
+        </div>
+
+        <!-- Paso 3: Resumen y Pago -->
+        <div class="form-step" id="step-3">
+            <h2 style="margin-bottom: 10px;">Resumen de Contratación</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Revisa tu información antes de proceder al pago seguro.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div class="summary-card" style="margin-bottom: 0;">
+                    <h4 style="color: var(--secondary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;">Contacto</h4>
+                    <p id="sum-contact-name" style="font-weight: 600;"></p>
+                    <p id="sum-contact-email" style="font-size: 0.9rem; color: var(--text-muted);"></p>
+                    <p id="sum-contact-phone" style="font-size: 0.9rem; color: var(--text-muted);"></p>
+                </div>
+                <div class="summary-card" style="margin-bottom: 0;">
+                    <h4 style="color: var(--secondary); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase;">Empresa</h4>
+                    <p id="sum-biz-name" style="font-weight: 600;"></p>
+                    <p id="sum-biz-rut" style="font-size: 0.9rem; color: var(--text-muted);"></p>
+                    <p id="sum-biz-location" style="font-size: 0.9rem; color: var(--text-muted);"></p>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <h4 style="color: var(--primary); margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase;">Detalle del Plan</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span id="display-plan-name" style="font-weight: 700; font-size: 1.2rem;">Plan Start</span>
+                    <span id="display-plan-price">1.0 UF</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--text-muted);">
+                    <span>IVA (19%)</span>
+                    <span id="display-iva">0.19 UF</span>
+                </div>
+                <div class="total-row">
+                    <span>Total a Pagar</span>
+                    <span id="display-total" style="color: var(--primary);">1.19 UF</span>
+                </div>
+            </div>
+
+            <div style="background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 30px; font-size: 0.9rem; text-align: center;">
+                🚀 Tu servicio se activará de inmediato tras el pago.
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <button class="btn-nav" style="flex: 1;" onclick="nextStep(2)">Atrás</button>
+                <button class="btn-primary" style="flex: 2; background: #5c62ec;" onclick="redirectToWebpay()">
+                    Pagar con Webpay
+                </button>
+            </div>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Variables Globales
+        let totalCLP = 0;
+        let planId = 'start';
+        const UF_VALUE = 37850.50;
+
+        function initPricing() {
+            console.log("Iniciando sistema de precios...");
+            const urlParams = new URLSearchParams(window.location.search);
+            planId = urlParams.get('plan') || 'start';
+            
+            const planData = {
+                'basico': { name: 'Plan Básico', price: 0.5 },
+                'start': { name: 'Plan Start', price: 1.0 },
+                'prime': { name: 'Plan Prime', price: 1.5 }
+            };
+
+            const currentPlan = planData[planId] || planData['start'];
+            const price = currentPlan.price;
+            const iva = price * 0.19;
+            const totalUF = price + iva;
+            totalCLP = Math.round(totalUF * UF_VALUE);
+
+            // Actualizar UI - Solo si existen los ID
+            if(document.getElementById('display-plan-name')) {
+                document.getElementById('display-plan-name').textContent = currentPlan.name;
+                document.getElementById('display-plan-price').textContent = price.toFixed(2) + ' UF';
+                document.getElementById('display-iva').textContent = iva.toFixed(2) + ' UF';
+                document.getElementById('display-total').textContent = totalUF.toFixed(2) + ' UF';
+            }
+            
+            lucide.createIcons();
+            console.log("Sistema listo:", { planId, totalCLP });
+        }
+
+        function nextStep(step) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById('step-' + step);
+            if (target) target.classList.add('active');
+
+            // Update visual step bubble indicators
+            document.querySelectorAll('.step-indicator .step').forEach((s, index) => {
+                s.classList.remove('active', 'completed');
+                if (index < step - 1) {
+                    s.classList.add('completed');
+                    s.innerHTML = '<i data-lucide="check" style="width: 20px; height: 20px;"></i>';
+                } else if (index === step - 1) {
+                    s.classList.add('active');
+                    s.innerHTML = step;
+                } else {
+                    s.innerHTML = index + 1;
+                }
+            });
+            lucide.createIcons();
+
+            window.scrollTo(0, 0);
+        }
+
+        function validateAndNext(step) {
+            const currentStepDiv = document.querySelector('.form-step.active');
+            const inputs = currentStepDiv.querySelectorAll('input[required]');
+            let allValid = true;
+
+            inputs.forEach(input => {
+                input.style.borderColor = "var(--glass-border)";
+                if (!input.value.trim()) {
+                    allValid = false;
+                    input.style.borderColor = "#ef4444";
+                }
+            });
+
+            if (allValid) {
+                if (step === 3) {
+                    document.getElementById('sum-contact-name').textContent = document.getElementById('contact-name').value;
+                    document.getElementById('sum-contact-email').textContent = document.getElementById('contact-email').value;
+                    document.getElementById('sum-contact-phone').textContent = document.getElementById('contact-phone').value;
+                    document.getElementById('sum-biz-name').textContent = document.getElementById('biz-name').value;
+                    document.getElementById('sum-biz-rut').textContent = document.getElementById('biz-rut').value;
+                    const address = document.getElementById('biz-address').value;
+                    const commune = document.getElementById('biz-commune').value;
+                    document.getElementById('sum-biz-location').textContent = `${address}, ${commune}`;
+                }
+                nextStep(step);
+            } else {
+                const errorMsg = currentStepDiv.querySelector('.error-msg');
+                if (errorMsg) errorMsg.style.display = 'block';
+            }
+        }
+
+        function redirectToWebpay() {
+            console.log("Click en Pagar detectado");
+            
+            try {
+                const name = document.getElementById('contact-name').value;
+                const email = document.getElementById('contact-email').value;
+                const company = document.getElementById('biz-name').value;
+                const rut = document.getElementById('biz-rut').value;
+
+                const pendingData = {
+                    name, email, company, rut,
+                    plan: planId,
+                    amount: totalCLP
+                };
+                
+                localStorage.setItem('pending_registration', JSON.stringify(pendingData));
+                // Usar API de pago centralizada desde env
+                const baseUrl = window.ENV ? window.ENV.API_PAYMENT_URL : "http://localhost:3010";
+                const apiUrl = `${baseUrl}/?amount=${totalCLP}&name=${encodeURIComponent(name)}&company=${encodeURIComponent(company)}&email=${encodeURIComponent(email)}&rut=${encodeURIComponent(rut)}&plan=${encodeURIComponent(planId)}&canal=externo`;
+                console.log("Redirigiendo a:", apiUrl);
+                window.location.href = apiUrl; 
+            } catch (e) {
+                console.error("Error en redirección:", e);
+                alert("Hubo un error al procesar el pago. Revisa la consola.");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPricing);
+    </script>
+</body>
+</html>
+
+</html>

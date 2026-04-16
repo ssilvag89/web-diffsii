@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacidad de Datos - DiffSii</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .content-page {
+            padding: 150px 5% 100px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-page h1 {
+            margin-bottom: 40px;
+            font-size: 3rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .legal-text {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .legal-text h2 {
+            color: var(--text-main);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo-wrapper">
+            <a href="index.html" style="text-decoration: none;">
+                <img src="logo.png" alt="DiffSii Logo" class="logo-img"
+                    style="height: 40px; width: auto; transform: scale(3.4); transform-origin: left center;">
+            </a>
+        </div>
+        <a href="index.html" class="btn-nav">Volver al Inicio</a>
+    </nav>
+
+    <main class="content-page">
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left"></i> Volver a la página principal
+        </a>
+
+        <h1>Política de Privacidad</h1>
+
+        <div class="legal-text">
+            <p>Última actualización: 07 de Abril de 2026</p>
+
+            <h2>1. Compromiso de DiffSii con la Privacidad</h2>
+            <p>En DiffSii SpA, valoramos la confidencialidad de la información fiscal de nuestros clientes. Esta
+                política detalla cómo recopilamos, utilizamos y protegemos la información transmitida a través de
+                nuestra plataforma.</p>
+
+            <h2>2. Información Recopilada</h2>
+            <p>Recopilamos datos estrictamente necesarios para la conciliación: Identificador Fiscal (RUT), folios de
+                documentos, fechas de emisión y montos. No accedemos a información personal que no sea requerida para la
+                auditoría contable.</p>
+
+            <h2>3. Uso de la Información</h2>
+            <p>La información almacenada se utiliza exclusivamente para: automatizar la detección de discrepancias
+                fiscales, generar reportes de auditoría y mejorar la precisión de los algoritmos de conciliación
+                internos.</p>
+
+            <h2>4. Seguridad y Encriptación</h2>
+            <p>Toda la información transmitida entre sus servidores y DiffSii viaja bajo protocolos seguros de
+                encriptación TLS 1.3 de extremo a extremo. Los datos almacenados se mantienen en bases de datos con
+                altos estándares de seguridad y acceso restringido.</p>
+
+            <h2>5. No Transferencia a Terceros</h2>
+            <p>DiffSii bajo ninguna circunstancia vende, arrienda o cede los datos contables o fiscales de sus clientes
+                a terceras partes u organismos externos sin una orden judicial competente.</p>
+
+            <h2>6. Sus Derechos de Acceso</h2>
+            <p>Como cliente, tiene derecho a solicitar la eliminación definitiva de sus datos y registros históricos de
+                nuestra plataforma en el momento que decida cancelar su suscripción mensual.</p>
+        </div>
+    </main>
+
+    <footer style="margin-top: 100px; border-top: 1px solid var(--glass-border); padding: 40px 0; text-align: center;">
+        <p>&copy; 2026 DiffSii. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

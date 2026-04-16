@@ -1,0 +1,13 @@
+{
+  "name": "webdiffsii-frontend",
+  "version": "1.0.0",
+  "description": "DiffSii Landing Page",
+  "main": "index.html",
+  "scripts": {
+    "dev": "dotenv -- sh -c 'node generate-env.js && browser-sync start --server --files \"*.html, *.css, *.js\" --port $PORT'"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.0",
+    "dotenv-cli": "^7.3.0"
+  }
+}
