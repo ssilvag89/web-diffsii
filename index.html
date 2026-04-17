@@ -356,29 +356,50 @@
                     </div>
                 </div>
                 <div class="contact-card reveal">
-                    <form id="contact-form">
-                        <div class="input-container">
-                            <i data-lucide="user"></i>
-                            <input type="text" id="name" required placeholder="Nombre Completo">
+                    <form id="contact-form" action="https://formsubmit.co/ajax/contacto@diffsii.com" method="POST">
+                        <input type="hidden" name="_subject" value="Nuevo contacto desde Landing Page DiffSii">
+                        <input type="hidden" name="_captcha" value="false">
+                        <div class="input-container" style="flex-direction: column; align-items: stretch;">
+                            <div style="position: relative; width: 100%;">
+                                <i data-lucide="user" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
+                                <input type="text" id="name" name="name" required placeholder="Nombre Completo" style="width: 100%;">
+                            </div>
+                            <span class="error-msg" id="name-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none;"></span>
                         </div>
-                        <div class="input-container">
-                            <i data-lucide="mail"></i>
-                            <input type="email" id="email" required placeholder="E-mail Corporativo">
+                        <div class="input-container" style="flex-direction: column; align-items: stretch;">
+                            <div style="position: relative; width: 100%;">
+                                <i data-lucide="mail" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
+                                <input type="email" id="email" name="email" required placeholder="E-mail Corporativo" style="width: 100%;">
+                            </div>
+                            <span class="error-msg" id="email-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none;"></span>
                         </div>
-                        <div class="input-container">
-                            <i data-lucide="phone"></i>
-                            <input type="tel" id="phone" required placeholder="Teléfono de Contacto">
+                        <div class="input-container" style="flex-direction: column; align-items: stretch;">
+                            <div style="position: relative; width: 100%;">
+                                <i data-lucide="phone" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
+                                <input type="tel" id="phone" name="phone" required placeholder="Teléfono de Contacto" style="width: 100%;">
+                            </div>
+                            <span class="error-msg" id="phone-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none;"></span>
                         </div>
-                        <div class="input-container">
-                            <i data-lucide="hash"></i>
-                            <input type="text" id="rut" placeholder="RUT Empresa (Opcional)">
+                        <div class="input-container" style="flex-direction: column; align-items: stretch;">
+                            <div style="position: relative; width: 100%;">
+                                <i data-lucide="hash" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
+                                <input type="text" id="rut" name="rut" placeholder="RUT Empresa (Opcional)" style="width: 100%;">
+                            </div>
+                            <span class="error-msg" id="rut-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none;"></span>
                         </div>
-                        <div class="input-container">
-                            <i data-lucide="message-square" style="top: 25px;"></i>
-                            <textarea id="message" rows="4" placeholder="¿Cómo podemos ayudarte?"></textarea>
+                        <div class="input-container" style="flex-direction: column; align-items: stretch;">
+                            <div style="position: relative; width: 100%;">
+                                <i data-lucide="message-square" style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);"></i>
+                                <textarea id="message" name="message" rows="4" placeholder="¿Cómo podemos ayudarte?" style="width: 100%;"></textarea>
+                            </div>
+                            <span class="error-msg" id="message-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none;"></span>
                         </div>
-                        <button type="submit" class="btn-primary" style="width: 100%; padding: 20px;">
-                            Enviar Consulta
+                        <div id="form-success" style="color: #10b981; font-size: 0.95rem; margin-bottom: 15px; display: none; text-align: center; font-weight: 600;">
+                            <i data-lucide="check-circle" style="display: inline-block; vertical-align: middle; margin-right: 5px; width: 18px;"></i>
+                            ¡Mensaje enviado correctamente! Te contactaremos pronto.
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 20px; transition: all 0.3s ease;">
+                            <span id="btn-text">Enviar Consulta</span>
                         </button>
                     </form>
                 </div>

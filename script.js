@@ -49,44 +49,94 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
             
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const rut = document.getElementById('rut').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            const errorSpans = document.querySelectorAll('.error-msg');
+            errorSpans.forEach(span => span.style.display = 'none');
+            document.getElementById('form-success').style.display = 'none';
+
+            let hasErrors = false;
+
+            // Name Validation
+            if (name.length < 3) {
+                const nameErr = document.getElementById('name-error');
+                nameErr.textContent = 'El nombre es muy corto.';
+                nameErr.style.display = 'block';
+                hasErrors = true;
+            }
 
             // Email Regex Validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert('Por favor, ingresa un correo electrónico corporativo válido.');
-                return;
+                const emailErr = document.getElementById('email-error');
+                emailErr.textContent = 'Por favor, ingresa un correo electrónico corporativo válido.';
+                emailErr.style.display = 'block';
+                hasErrors = true;
             }
 
             // Phone Regex Validation (Chilean format +56 9 XXXX XXXX or similar)
             const phoneCleaned = phone.replace(/\s/g, ''); 
-            if (phoneCleaned.length < 9) {
-                alert('Por favor, ingresa un número de teléfono válido (ej: +56 9 1234 5678).');
-                return;
+            if (phoneCleaned.length < 8) {
+                const phoneErr = document.getElementById('phone-error');
+                phoneErr.textContent = 'Ingresa un número de teléfono válido (ej: +56 9 1234 5678).';
+                phoneErr.style.display = 'block';
+                hasErrors = true;
             }
+
+            if (hasErrors) return;
 
             // Visual feedback
             const submitBtn = contactForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
+            const submitBtnText = document.getElementById('btn-text');
+            const originalText = submitBtnText.textContent;
             
-            submitBtn.textContent = 'Enviando...';
+            submitBtnText.textContent = 'Enviando...';
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
 
-            // Simulate API call
-            setTimeout(() => {
-                alert(`¡Gracias ${name}! Hemos recibido tu consulta exitosamente.`);
-                submitBtn.textContent = '¡Enviado!';
+            // Real API Call (FormSubmit.co via AJAX)
+            fetch('https://formsubmit.co/ajax/contacto@diffsii.com', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre: name,
+                    correo: email,
+                    telefono: phone,
+                    rut: rut,
+                    mensaje: message,
+                    _subject: "Nuevo Lead: " + name
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('form-success').style.display = 'block';
+                submitBtnText.textContent = '¡Enviado!';
                 contactForm.reset();
                 
                 setTimeout(() => {
-                    submitBtn.textContent = originalText;
+                    submitBtnText.textContent = originalText;
                     submitBtn.disabled = false;
                     submitBtn.style.opacity = '1';
-                }, 3000);
-            }, 1000);
+                    document.getElementById('form-success').style.display = 'none';
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error enviando formulario:', error);
+                const msgErr = document.getElementById('message-error');
+                msgErr.textContent = 'Hubo un error al enviar el mensaje. Por favor intenta escribiendo a contacto@diffsii.com directamente.';
+                msgErr.style.display = 'block';
+                
+                submitBtnText.textContent = originalText;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            });
         });
     }
 
