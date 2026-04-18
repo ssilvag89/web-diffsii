@@ -78,13 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 hasErrors = true;
             }
 
-            // Phone Regex Validation (Chilean format +56 9 XXXX XXXX or similar)
-            const phoneCleaned = phone.replace(/\s/g, ''); 
-            if (phoneCleaned.length < 8) {
+            // Phone Regex Validation (Solo números locales o con formato +569)
+            const phoneCleaned = phone.replace(/\s|\+/g, ''); 
+            if (!/^[0-9]{8,12}$/.test(phoneCleaned)) {
                 const phoneErr = document.getElementById('phone-error');
                 phoneErr.textContent = 'Ingresa un número de teléfono válido (ej: +56 9 1234 5678).';
                 phoneErr.style.display = 'block';
                 hasErrors = true;
+            }
+
+            // RUT Regex Validation (If provided)
+            if (rut.length > 0) {
+                let rutStr = rut.replace(/\./g, ''); 
+                if (!isValidRUT(rutStr)) {
+                    const rutErr = document.getElementById('rut-error');
+                    rutErr.textContent = 'RUT de empresa inválido. Revísalo e intenta de nuevo.';
+                    rutErr.style.display = 'block';
+                    hasErrors = true;
+                }
             }
 
             if (hasErrors) return;
@@ -99,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.style.opacity = '0.7';
 
             // Real API Call (FormSubmit.co via AJAX)
-            fetch('https://formsubmit.co/ajax/contacto@diffsii.com', {
+            fetch('https://formsubmit.co/ajax/diffsii.notifica@gmail.com', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -158,3 +169,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// --- Funciones Globales para RUT ---
+window.formatRUT = function(rutInput) {
+    let valor = rutInput.value.replace(/[^0-9kK]/g, "");
+    if (valor.length > 1) {
+        let cuerpo = valor.slice(0, -1);
+        let dv = valor.slice(-1).toUpperCase();
+        rutInput.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+    } else {
+        rutInput.value = valor;
+    }
+};
+
+window.isValidRUT = function(rutCompleto) {
+    if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rutCompleto)) return false;
+    let tmp = rutCompleto.split('-');
+    let digv = tmp[1]; 
+    let rut = tmp[0];
+    if (digv == 'K') digv = 'k';
+    
+    let M=0,S=1;
+    for(;rut;rut=Math.floor(rut/10)) S=(S+rut%10*(9-M++%6))%11;
+    let dvCalculado = S ? S-1 : 'k';
+    return (dvCalculado == digv);
+};

@@ -194,15 +194,9 @@
                 <i data-lucide="building"></i>
                 <input type="text" id="biz-name" required placeholder="Razón Social (Ej: Servicios Tecnológicos SpA)">
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="input-container">
-                    <i data-lucide="hash"></i>
-                    <input type="text" id="biz-rut" required placeholder="RUT Empresa (77.654.321-0)">
-                </div>
-                <div class="input-container">
-                    <i data-lucide="activity"></i>
-                    <input type="text" id="biz-acteco" required placeholder="Acteco">
-                </div>
+            <div class="input-container">
+                <i data-lucide="hash"></i>
+                <input type="text" id="biz-rut" required placeholder="RUT Empresa (Ej: 77.654.321-0)" oninput="formatRUT(this)">
             </div>
             <div class="input-container">
                 <i data-lucide="map-pin"></i>
@@ -275,14 +269,46 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         // Variables Globales
+        // Variables Globales
         let totalCLP = 0;
         let planId = 'start';
-        const UF_VALUE = 37850.50;
+        let UF_VALUE = 37850.50; // Valor fallback por si falla la API
 
-        function initPricing() {
+        async function initPricing() {
             console.log("Iniciando sistema de precios...");
             const urlParams = new URLSearchParams(window.location.search);
             planId = urlParams.get('plan') || 'start';
+            
+            // --- Sistema de Caché Diario para la UF ---
+            const todayStr = new Date().toISOString().split('T')[0]; // Ej: "2026-04-17"
+            const cachedUF = JSON.parse(localStorage.getItem('diffsii_uf_cache') || '{}');
+            
+            if (cachedUF.date === todayStr && cachedUF.value) {
+                // Existe en caché y es de hoy
+                UF_VALUE = cachedUF.value;
+                console.log("UF extraída de la memoria Caché local (Ahorro de API):", UF_VALUE);
+            } else {
+                // Consultar valor oficial de la UF
+                try {
+                    // Utilizamos mindicador.cl que es un espejo directo y preparado con CORS
+                    const res = await fetch('https://mindicador.cl/api/uf');
+                    if (res.ok) {
+                        const data = await res.json();
+                        UF_VALUE = data.serie[0].valor;
+                        // Guardar en Caché para las siguientes visitas de este usuario hoy
+                        localStorage.setItem('diffsii_uf_cache', JSON.stringify({ date: todayStr, value: UF_VALUE }));
+                        console.log("UF Oficial obtenida desde la API:", UF_VALUE);
+                    }
+                } catch (error) {
+                    // Fallback: Si no hay internet/falla, usamos el caché obsoleto si existe
+                    if (cachedUF.value) {
+                        UF_VALUE = cachedUF.value;
+                        console.warn("Fallo de API, usando caché anterior:", UF_VALUE);
+                    } else {
+                        console.warn("No se pudo contactar a la API. Usando UF fallback rígida.", error);
+                    }
+                }
+            }
             
             const planData = {
                 'basico': { name: 'Plan Básico', price: 0.5 },
@@ -302,6 +328,17 @@
                 document.getElementById('display-plan-price').textContent = price.toFixed(2) + ' UF';
                 document.getElementById('display-iva').textContent = iva.toFixed(2) + ' UF';
                 document.getElementById('display-total').textContent = totalUF.toFixed(2) + ' UF';
+                
+                // UX Helper: Mostrar también en CLP
+                let helper = document.getElementById('clp-helper');
+                if (!helper) {
+                    helper = document.createElement('div');
+                    helper.id = 'clp-helper';
+                    helper.style = "font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;";
+                    document.getElementById('display-total').parentElement.appendChild(helper);
+                }
+                helper.innerHTML = `Total referencial: <strong style="color:var(--text-primary)">$${totalCLP.toLocaleString('es-CL')} CLP</strong> 
+                                    <br><small style="font-size: 0.70rem; opacity: 0.7;">(Valor UF Hoy: $${UF_VALUE.toLocaleString('es-CL')})</small>`;
             }
             
             lucide.createIcons();
@@ -331,11 +368,39 @@
             window.scrollTo(0, 0);
         }
 
+        // --- Funciones Validadoras ---
+        function formatRUT(rutInput) {
+            let valor = rutInput.value.replace(/[^0-9kK]/g, "");
+            if (valor.length > 1) {
+                let cuerpo = valor.slice(0, -1);
+                let dv = valor.slice(-1).toUpperCase();
+                rutInput.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+            } else {
+                rutInput.value = valor;
+            }
+        }
+
+        function isValidRUT(rutCompleto) {
+            if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rutCompleto)) return false;
+            let tmp = rutCompleto.split('-');
+            let digv = tmp[1]; 
+            let rut = tmp[0];
+            if (digv == 'K') digv = 'k';
+            
+            let M=0,S=1;
+            for(;rut;rut=Math.floor(rut/10)) S=(S+rut%10*(9-M++%6))%11;
+            let dvCalculado = S ? S-1 : 'k';
+            return (dvCalculado == digv);
+        }
+
         function validateAndNext(step) {
             const currentStepDiv = document.querySelector('.form-step.active');
             const inputs = currentStepDiv.querySelectorAll('input[required]');
+            const errorMsg = currentStepDiv.querySelector('.error-msg');
             let allValid = true;
+            let customError = "";
 
+            // Limpiar errores visuales
             inputs.forEach(input => {
                 input.style.borderColor = "var(--glass-border)";
                 if (!input.value.trim()) {
@@ -344,7 +409,27 @@
                 }
             });
 
+            // Validaciones Específicas
+            if (allValid && step === 2) { // Avanzando a Paso 2 (Validar Paso 1: Email)
+                const emailInput = document.getElementById('contact-email');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailInput.value)) {
+                    allValid = false;
+                    emailInput.style.borderColor = "#ef4444";
+                    customError = "Formato de correo electrónico inválido.";
+                }
+            } else if (allValid && step === 3) { // Avanzando a Paso 3 (Validar Paso 2: RUT)
+                const rutInput = document.getElementById('biz-rut');
+                let rutStr = rutInput.value.replace(/\./g, ''); // Remover puntos para el validador
+                if (!isValidRUT(rutStr)) {
+                    allValid = false;
+                    rutInput.style.borderColor = "#ef4444";
+                    customError = "RUT de empresa inválido. Revísalo e intenta de nuevo.";
+                }
+            } // Nota: en javascript == no estricto dejará pasar, el validador es sólido para Chile.
+
             if (allValid) {
+                if (errorMsg) errorMsg.style.display = 'none';
                 if (step === 3) {
                     document.getElementById('sum-contact-name').textContent = document.getElementById('contact-name').value;
                     document.getElementById('sum-contact-email').textContent = document.getElementById('contact-email').value;
@@ -357,8 +442,10 @@
                 }
                 nextStep(step);
             } else {
-                const errorMsg = currentStepDiv.querySelector('.error-msg');
-                if (errorMsg) errorMsg.style.display = 'block';
+                if (errorMsg) {
+                    errorMsg.textContent = customError || "⚠️ Por favor, completa todos los campos obligatorios.";
+                    errorMsg.style.display = 'block';
+                }
             }
         }
 
