@@ -379,7 +379,7 @@
                 
                 localStorage.setItem('pending_registration', JSON.stringify(pendingData));
                 // Usar API de pago centralizada desde env
-                const baseUrl = window.ENV ? window.ENV.API_PAYMENT_URL : "http://localhost:3010";
+                const baseUrl = window.ENV ? window.ENV.API_PAYMENT_URL : "https://webpay.diffsii.cl";
                 const apiUrl = `${baseUrl}/?amount=${totalCLP}&name=${encodeURIComponent(name)}&company=${encodeURIComponent(company)}&email=${encodeURIComponent(email)}&rut=${encodeURIComponent(rut)}&plan=${encodeURIComponent(planId)}&canal=externo`;
                 console.log("Redirigiendo a:", apiUrl);
                 window.location.href = apiUrl; 

@@ -114,7 +114,7 @@
                 <p style="color: #10b981; font-weight: 600; margin-bottom: 20px;">
                     ✅ Tu instancia ha sido creada con éxito.
                 </p>
-                <a href="http://localhost:5500/" id="btn-dashboard" class="btn btn-primary" style="display: block; width: 100%;">Iniciar
+                <a href="https://saas.diffsii.cl/" id="btn-dashboard" class="btn btn-primary" style="display: block; width: 100%;">Iniciar
                     Sessión</a>
             </div>
         </div>
@@ -136,7 +136,7 @@
 
             try {
                 // 2. Consumir API de creación de sistema (usando variable de entorno centralizada)
-                const apiUrl = window.ENV ? window.ENV.API_REGISTER_URL : 'http://localhost:3000/api/public/register-client';
+                const apiUrl = window.ENV ? window.ENV.API_REGISTER_URL : 'https://saas.diffsii.cl/api/public/register-client';
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
