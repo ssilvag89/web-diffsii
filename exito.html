@@ -135,25 +135,25 @@
             }
 
             try {
-                // 2. Consumir API de creación de sistema (usando variable de entorno centralizada)
-                const apiUrl = window.ENV ? window.ENV.API_REGISTER_URL : 'https://saas.diffsii.cl/api/public/register-client';
+                // 2. Consumir API de creación de sistema (usando variable de entorno centralizada con fallback seguro)
+                const apiUrl = (window.ENV && window.ENV.API_REGISTER_URL) ? window.ENV.API_REGISTER_URL : 'https://saas.diffsii.cl/api/public/register-client';
+                
+                const payload = {
+                    userName: userData.name,
+                    userEmail: userData.email,
+                    name: userData.company, // Crucial: El backend espera 'name' como nombre de la empresa
+                    companyName: userData.company,
+                    companyRut: userData.rut,
+                    planId: userData.plan,
+                    plan: userData.plan, // El controlador evalúa 'plan'
+                    email: userData.email,
+                    rut: userData.rut
+                };
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        // Formato del curl inicial
-                        userName: userData.name,
-                        userEmail: userData.email,
-                        companyName: userData.company,
-                        companyRut: userData.rut,
-                        planId: userData.plan,
-
-                        // Campos adicionales por si la API espera nombres cortos (según el error 400)
-                        name: userData.name,
-                        email: userData.email,
-                        rut: userData.rut,
-                        nombre: userData.name // Por si acaso en español
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
