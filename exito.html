@@ -124,13 +124,27 @@
         lucide.createIcons();
 
         async function registerSystem() {
-            // 1. Recuperar datos guardados antes del pago
-            const userData = JSON.parse(localStorage.getItem('pending_registration'));
+            const urlParams = new URLSearchParams(window.location.search);    
+            let userData = JSON.parse(localStorage.getItem('pending_registration'));
+            
+            // FALLBACK CRÍTICO: Si el Storage está vacío (Cruce de dominios localhost vs VPS)
+            if (!userData && urlParams.get('email') && urlParams.get('rut')) {
+                console.log("LocalStorage vacío. Reconstruyendo identidad desde URL...");
+                userData = {
+                    name: urlParams.get('name'),
+                    email: urlParams.get('email'),
+                    company: urlParams.get('company'),
+                    rut: urlParams.get('rut'),
+                    plan: urlParams.get('plan'),
+                    amount: urlParams.get('amount')
+                };
+            }
+
             const statusText = document.getElementById('status-text');
             const apiResponse = document.getElementById('api-response');
 
-            if (!userData) {
-                statusText.innerHTML = "No se encontraron datos de registro. Por favor, contacta a soporte.";
+            if (!userData || !userData.email) {
+                statusText.innerHTML = "No se encontraron datos de registro en la URL ni en LocalStorage. Por favor, contacta a soporte.";
                 return;
             }
 
@@ -182,11 +196,12 @@
                     // Limpiar datos tras éxito
                     localStorage.removeItem('pending_registration');
                 } else {
-                    statusText.innerHTML = "❌ Hubo un problema al crear tu sistema. Nuestro equipo te contactará pronto.";
+                    const errorMsg = await response.json().catch(()=>({}));
+                    statusText.innerHTML = `❌ Hubo un problema al registrar la compañía.<br><small style="color:#ef4444">${errorMsg.error || response.statusText || 'Error desconocido del servidor'}</small>`;
                 }
             } catch (error) {
                 console.error("Error API:", error);
-                statusText.innerHTML = "❌ Error de conexión al crear tu instancia.";
+                statusText.innerHTML = `❌ Error de red o CORS al crear tu instancia:<br><small style="color:#ef4444">${error.message}</small>`;
             }
         }
 
