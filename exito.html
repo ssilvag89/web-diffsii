@@ -135,6 +135,9 @@
                     email: urlParams.get('email'),
                     company: urlParams.get('company'),
                     rut: urlParams.get('rut'),
+                    address: urlParams.get('address'),
+                    commune: urlParams.get('commune'),
+                    city: urlParams.get('city'),
                     plan: urlParams.get('plan'),
                     amount: urlParams.get('amount')
                 };
@@ -161,7 +164,10 @@
                     planId: userData.plan,
                     plan: userData.plan, // El controlador evalúa 'plan'
                     email: userData.email,
-                    rut: userData.rut
+                    rut: userData.rut,
+                    address: userData.address,
+                    comuna: userData.commune,    // el Backend usa 'comuna'
+                    city: userData.city          // el Backend usa 'city'
                 };
 
                 const response = await fetch(apiUrl, {

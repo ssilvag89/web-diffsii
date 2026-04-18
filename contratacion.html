@@ -479,9 +479,12 @@
                         const email = document.getElementById('contact-email').value;
                         const company = document.getElementById('biz-name').value;
                         const rut = document.getElementById('biz-rut').value;
+                        const address = document.getElementById('biz-address').value;
+                        const commune = document.getElementById('biz-commune').value;
+                        const city = document.getElementById('biz-city').value;
 
                         const pendingData = {
-                            name, email, company, rut,
+                            name, email, company, rut, address, commune, city,
                             plan: planId,
                             amount: totalCLP
                         };
@@ -489,7 +492,7 @@
                         localStorage.setItem('pending_registration', JSON.stringify(pendingData));
                         // Usar API de pago centralizada desde env
                         const baseUrl = window.ENV ? window.ENV.API_PAYMENT_URL : "https://webpay.diffsii.cl";
-                        const apiUrl = `${baseUrl}/?amount=${totalCLP}&name=${encodeURIComponent(name)}&company=${encodeURIComponent(company)}&email=${encodeURIComponent(email)}&rut=${encodeURIComponent(rut)}&plan=${encodeURIComponent(planId)}&canal=externo`;
+                        const apiUrl = `${baseUrl}/?amount=${totalCLP}&name=${encodeURIComponent(name)}&company=${encodeURIComponent(company)}&email=${encodeURIComponent(email)}&rut=${encodeURIComponent(rut)}&plan=${encodeURIComponent(planId)}&address=${encodeURIComponent(address)}&commune=${encodeURIComponent(commune)}&city=${encodeURIComponent(city)}&canal=externo`;
                         console.log("Redirigiendo a:", apiUrl);
                         window.location.href = apiUrl;
                     } catch (e) {
