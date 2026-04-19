@@ -888,3 +888,29 @@ footer {
 .footer-col a { display: block; color: var(--text-muted); text-decoration: none; margin-bottom: 15px; transition: color 0.3s; }
 .footer-col a:hover { color: var(--text-main); }
 .footer-bottom { text-align: center; border-top: 1px solid var(--glass-border); padding-top: 40px; color: var(--text-muted); font-size: 0.9rem; }
+
+/* FIX RESPONSIVO AVANZADO */
+.flex-nav-desktop { display: flex; gap: 30px; }
+.flex-nav-actions { display: flex; gap: 15px; align-items: center; }
+.hero-actions { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
+
+.grid-3-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.grid-4-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+@media (max-width: 950px) {
+    .flex-nav-desktop { display: none !important; }
+    .grid-3-col, .grid-4-col { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 650px) {
+    .grid-3-col, .grid-4-col, .grid-2-col { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; width: 100%; align-items: center; }
+    .hero-actions a { width: 100%; text-align: center; justify-content: center; }
+    .stats-grid { gap: 40px; }
+    .stat-item h3 { font-size: 2.5rem; }
+    .stat-item span { font-size: 0.9rem; }
+    nav { padding: 15px 5%; }
+    .flex-nav-actions .btn-ghost { display: none; } /* Hide login link on very small screens to save space */
+    .hero-premium h1 { font-size: 2.2rem; }
+}
