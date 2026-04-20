@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const rut = document.getElementById('rut').value.trim();
-            const message = document.getElementById('message').value.trim();
+            const messageElement = document.getElementById('message');
+            const message = messageElement ? messageElement.value.trim() : 'Sin mensaje';
 
             const errorSpans = document.querySelectorAll('.error-msg');
             errorSpans.forEach(span => span.style.display = 'none');
@@ -140,9 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error enviando formulario:', error);
-                const msgErr = document.getElementById('message-error');
-                msgErr.textContent = 'Hubo un error al enviar el mensaje. Por favor intenta escribiendo a contacto@diffsii.com directamente.';
-                msgErr.style.display = 'block';
+                const generalErr = document.getElementById('email-error');
+                if (generalErr) {
+                    generalErr.textContent = 'Hubo un error al enviar tu solicitud. Comunícate directo a diffsii.notifica@gmail.com o vía WhatsApp.';
+                    generalErr.style.display = 'block';
+                }
                 
                 submitBtnText.textContent = originalText;
                 submitBtn.disabled = false;
