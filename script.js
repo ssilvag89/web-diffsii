@@ -110,18 +110,50 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
 
-            // Add dynamic _next for redirection to custom success page
-            let nextInput = document.querySelector('input[name="_next"]');
-            if (!nextInput) {
-                nextInput = document.createElement('input');
-                nextInput.type = 'hidden';
-                nextInput.name = '_next';
-                contactForm.appendChild(nextInput);
-            }
-            nextInput.value = window.location.origin + '/exito.html';
-
-            // Enviar formulario de forma nativa para esquivar bloques de CORS o falta de activación
-            contactForm.submit();
+            // Envío por AJAX a Formspree (Previene la página blanca de éxito de Formspree)
+            fetch(contactForm.action, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre: name,
+                    correo: email,
+                    telefono: phone,
+                    rut: rut,
+                    mensaje: message,
+                    _subject: "Nuevo Lead de DiffSii: " + name
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('form-success').style.display = 'flex';
+                    submitBtnText.textContent = '¡Enviado!';
+                    contactForm.reset();
+                    
+                    setTimeout(() => {
+                        submitBtnText.textContent = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        document.getElementById('form-success').style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error("Respuesta de red no fue ok.");
+                }
+            })
+            .catch(error => {
+                console.error('Error enviando formulario:', error);
+                const generalErr = document.getElementById('email-error');
+                if (generalErr) {
+                    generalErr.textContent = 'Hubo un problema de conexión. Intenta nuevamente o contáctanos por WhatsApp.';
+                    generalErr.style.display = 'block';
+                }
+                
+                submitBtnText.textContent = originalText;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            });
         });
     }
 
