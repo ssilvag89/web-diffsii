@@ -130,6 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     document.getElementById('form-success').style.display = 'flex';
                     submitBtnText.textContent = '¡Enviado!';
+                    
+                    // Tracking: Lead Generado Exitoso
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'generate_lead', {
+                            'form_name': 'demo_consultiva'
+                        });
+                    }
+                    
                     contactForm.reset();
                     
                     setTimeout(() => {
@@ -172,6 +180,50 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector(this.getAttribute('href')).scrollIntoView({
                 behavior: 'smooth'
             });
+        });
+    });
+
+    // --- 6. Eventos y Tracking Avanzado de GA4 ---
+    
+    // A. Rastreo de visibilidad de Secciones (Scroll Depth)
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Obtiene el ID, o en su defecto la primera clase, para identificar la sección
+                const sectionName = entry.target.id || entry.target.className.split(' ')[0] || 'seccion_generica';
+                
+                // Evita disparar el evento múltiples veces por sesión (hacia arriba y abajo)
+                if (!entry.target.dataset.gaTracked) {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'scroll_depth_section', {
+                            'section_viewed': sectionName
+                        });
+                    }
+                    entry.target.dataset.gaTracked = "true";
+                }
+            }
+        });
+    }, { threshold: 0.45 }); // Se activa cuando el 45% de la sección entra en pantalla
+    
+    document.querySelectorAll('section').forEach(section => {
+        sectionObserver.observe(section);
+    });
+
+    // B. Rastreo de Clics en Botones (Interacciones)
+    document.querySelectorAll('.btn-primary, .btn-nav, .btn-ghost, a').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (typeof gtag !== 'undefined') {
+                const btnText = btn.textContent.trim() || 'icon';
+                const destination = btn.getAttribute('href') || 'null';
+                
+                // Filtramos un poco para no trackear clics vacíos
+                if (destination !== '#' && destination !== 'null') {
+                    gtag('event', 'click_cta', {
+                        'button_text': btnText.substring(0, 30),
+                        'destination_url': destination
+                    });
+                }
+            }
         });
     });
 });
