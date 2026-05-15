@@ -110,47 +110,18 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
 
-            // Real API Call (FormSubmit.co via AJAX)
-            fetch('https://formsubmit.co/ajax/diffsii.notifica@gmail.com', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    nombre: name,
-                    correo: email,
-                    telefono: phone,
-                    rut: rut,
-                    mensaje: message,
-                    _subject: "Nuevo Lead: " + name
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('form-success').style.display = 'block';
-                submitBtnText.textContent = '¡Enviado!';
-                contactForm.reset();
-                
-                setTimeout(() => {
-                    submitBtnText.textContent = originalText;
-                    submitBtn.disabled = false;
-                    submitBtn.style.opacity = '1';
-                    document.getElementById('form-success').style.display = 'none';
-                }, 5000);
-            })
-            .catch(error => {
-                console.error('Error enviando formulario:', error);
-                const generalErr = document.getElementById('email-error');
-                if (generalErr) {
-                    generalErr.textContent = 'Hubo un error al enviar tu solicitud. Comunícate directo a diffsii.notifica@gmail.com o vía WhatsApp.';
-                    generalErr.style.display = 'block';
-                }
-                
-                submitBtnText.textContent = originalText;
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-            });
+            // Add dynamic _next for redirection to custom success page
+            let nextInput = document.querySelector('input[name="_next"]');
+            if (!nextInput) {
+                nextInput = document.createElement('input');
+                nextInput.type = 'hidden';
+                nextInput.name = '_next';
+                contactForm.appendChild(nextInput);
+            }
+            nextInput.value = window.location.origin + '/exito.html';
+
+            // Enviar formulario de forma nativa para esquivar bloques de CORS o falta de activación
+            contactForm.submit();
         });
     }
 
