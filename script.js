@@ -118,9 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    nombre: name,
-                    correo: email,
-                    telefono: phone,
+                    name: name,
+                    email: email,
+                    phone: phone,
                     rut: rut,
                     mensaje: message,
                     _subject: "Nuevo Lead de DiffSii: " + name
