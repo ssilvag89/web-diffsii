@@ -452,6 +452,37 @@
 
                     if (allValid) {
                         if (errorMsg) errorMsg.style.display = 'none';
+
+                        // 🎯 CAPTURA DE LEAD TEMPRANA (CARRITO ABANDONADO)
+                        if (step === 2 && !window.abandonedCartCaptured) {
+                            window.abandonedCartCaptured = true;
+                            const contactName = document.getElementById('contact-name').value;
+                            const contactEmail = document.getElementById('contact-email').value;
+                            const contactPhone = document.getElementById('contact-phone').value;
+                            
+                            // Enviar silenciosamente por AJAX a Formspree
+                            fetch('https://formspree.io/f/xeenyada', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    nombre: contactName,
+                                    correo: contactEmail,
+                                    telefono: contactPhone,
+                                    _subject: "🛒 Checkout Iniciado (Posible Abandono): " + contactName,
+                                    plan_interesado: planId
+                                })
+                            }).catch(e => console.error("Error de telemetría de carrito:", e));
+                            
+                            // GA4 Funnel Tracking
+                            if (typeof gtag !== 'undefined') {
+                                gtag('event', 'checkout_step_1', {
+                                    'event_category': 'ecommerce_funnel'
+                                });
+                            }
+                        }
                         if (step === 3) {
                             document.getElementById('sum-contact-name').textContent = document.getElementById('contact-name').value;
                             document.getElementById('sum-contact-email').textContent = document.getElementById('contact-email').value;
