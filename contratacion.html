@@ -434,11 +434,14 @@
                     // Validaciones Específicas
                     if (allValid && step === 2) { // Avanzando a Paso 2 (Validar Paso 1: Email)
                         const emailInput = document.getElementById('contact-email');
+                        const emailVal = emailInput.value.trim();
                         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (!emailRegex.test(emailInput.value)) {
+                        if (!emailRegex.test(emailVal)) {
                             allValid = false;
                             emailInput.style.borderColor = "#ef4444";
                             customError = "Formato de correo electrónico inválido.";
+                        } else {
+                            emailInput.value = emailVal; // Limpiar espacio visualmente
                         }
                     } else if (allValid && step === 3) { // Avanzando a Paso 3 (Validar Paso 2: RUT)
                         const rutInput = document.getElementById('biz-rut');
@@ -456,9 +459,9 @@
                         // 🎯 CAPTURA DE LEAD TEMPRANA (CARRITO ABANDONADO)
                         if (step === 2 && !window.abandonedCartCaptured) {
                             window.abandonedCartCaptured = true;
-                            const contactName = document.getElementById('contact-name').value;
-                            const contactEmail = document.getElementById('contact-email').value;
-                            const contactPhone = document.getElementById('contact-phone').value;
+                            const contactName = document.getElementById('contact-name').value.trim();
+                            const contactEmail = document.getElementById('contact-email').value.trim();
+                            const contactPhone = document.getElementById('contact-phone').value.trim();
                             
                             // Enviar silenciosamente por AJAX a Formspree
                             fetch('https://formspree.io/f/xeenyada', {
