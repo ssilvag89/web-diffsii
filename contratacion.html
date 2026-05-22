@@ -290,7 +290,20 @@
             </div>
             <script src="https://unpkg.com/lucide@latest"></script>
             <script>
-                // Variables Globales
+                // --- UTM Tracking System ---
+                const _uParams = new URLSearchParams(window.location.search);
+                const _uKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+                let utmData = JSON.parse(sessionStorage.getItem('diffsii_utms') || '{}');
+                let _updated = false;
+                
+                _uKeys.forEach(p => {
+                    if (_uParams.has(p)) {
+                        utmData[p] = _uParams.get(p);
+                        _updated = true;
+                    }
+                });
+                if(_updated) sessionStorage.setItem('diffsii_utms', JSON.stringify(utmData));
+
                 // Variables Globales
                 let totalCLP = 0;
                 let planId = 'start';
@@ -335,7 +348,8 @@
                     const planData = {
                         'basico': { name: 'Básico', price: 0.9 },
                         'start': { name: 'Start', price: 1.9 },
-                        'prime': { name: 'Prime', price: 3.9 }
+                        'prime': { name: 'Prime', price: 3.9 },
+                        'trial': { name: 'Prueba Gratis (15 Días)', price: 0 }
                     };
 
                     const currentPlan = planData[planId] || planData['start'];
@@ -359,8 +373,18 @@
                             helper.style = "font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;";
                             document.getElementById('display-total').parentElement.appendChild(helper);
                         }
-                        helper.innerHTML = `Total referencial: <strong style="color:var(--text-primary)">$${totalCLP.toLocaleString('es-CL')} CLP</strong> 
-                                    <br><small style="font-size: 0.70rem; opacity: 0.7;">(Valor UF Hoy: $${UF_VALUE.toLocaleString('es-CL')})</small>`;
+                        
+                        if (planId === 'trial') {
+                            helper.innerHTML = `<strong style="color:#10b981">Total: $0 CLP</strong><br><small style="font-size: 0.70rem; opacity: 0.7;">No se requiere tarjeta de crédito</small>`;
+                            const payBtn = document.querySelector('.btn-primary[onclick="redirectToWebpay()"]');
+                            if(payBtn) {
+                                payBtn.textContent = "Comenzar Prueba Gratis";
+                                payBtn.style.background = "#10b981";
+                            }
+                        } else {
+                            helper.innerHTML = `Total referencial: <strong style="color:var(--text-primary)">$${totalCLP.toLocaleString('es-CL')} CLP</strong> 
+                                        <br><small style="font-size: 0.70rem; opacity: 0.7;">(Valor UF Hoy: $${UF_VALUE.toLocaleString('es-CL')})</small>`;
+                        }
                     }
 
                     lucide.createIcons();
@@ -475,7 +499,8 @@
                                     email: contactEmail,
                                     phone: contactPhone,
                                     _subject: "🛒 Checkout Iniciado (Posible Abandono): " + contactName,
-                                    plan_interesado: planId
+                                    plan_interesado: planId,
+                                    ...utmData
                                 })
                             }).catch(e => console.error("Error de telemetría de carrito:", e));
                             
@@ -522,6 +547,39 @@
                             plan: planId,
                             amount: totalCLP
                         };
+
+                        if (planId === 'trial') {
+                            const payBtn = document.querySelector('.btn-primary[onclick="redirectToWebpay()"]');
+                            if(payBtn) {
+                                payBtn.textContent = 'Creando cuenta...';
+                                payBtn.style.opacity = '0.7';
+                                payBtn.disabled = true;
+                            }
+                            
+                            fetch('https://formspree.io/f/xeenyada', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    name: name,
+                                    email: email,
+                                    phone: document.getElementById('contact-phone').value.trim(),
+                                    company: company,
+                                    rut: rut,
+                                    address: address,
+                                    _subject: "🎉 NUEVA PRUEBA GRATIS 15 DÍAS: " + company,
+                                    ...utmData
+                                })
+                            }).then(() => {
+                                if (typeof gtag !== 'undefined') gtag('event', 'generate_trial', { 'event_category': 'conversion' });
+                                window.location.href = 'exito.html';
+                            }).catch(() => {
+                                window.location.href = 'exito.html';
+                            });
+                            return; // Stop here, bypass webpay
+                        }
 
                         localStorage.setItem('pending_registration', JSON.stringify(pendingData));
                         // Usar API de pago centralizada desde env

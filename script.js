@@ -3,6 +3,23 @@
 */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. UTM Tracking System (Capture and Persist)
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    let currentUTMs = JSON.parse(sessionStorage.getItem('diffsii_utms') || '{}');
+    let utmsUpdated = false;
+    
+    utmKeys.forEach(param => {
+        if (urlParams.has(param)) {
+            currentUTMs[param] = urlParams.get(param);
+            utmsUpdated = true;
+        }
+    });
+    
+    if (utmsUpdated) {
+        sessionStorage.setItem('diffsii_utms', JSON.stringify(currentUTMs));
+    }
+
     // 1. Initialize Lucide Icons
     lucide.createIcons();
 
@@ -123,7 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone: phone,
                     rut: rut,
                     mensaje: message,
-                    _subject: "Nuevo Lead de DiffSii: " + name
+                    _subject: "Nuevo Lead de DiffSii: " + name,
+                    ...currentUTMs
                 })
             })
             .then(response => {
