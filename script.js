@@ -152,7 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Tracking: Lead Generado Exitoso
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'generate_lead', {
-                            'form_name': 'demo_consultiva'
+                            'form_name': 'demo_consultiva',
+                            ...currentUTMs
                         });
                     }
                     

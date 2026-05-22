@@ -507,7 +507,8 @@
                             // GA4 Funnel Tracking
                             if (typeof gtag !== 'undefined') {
                                 gtag('event', 'checkout_step_1', {
-                                    'event_category': 'ecommerce_funnel'
+                                    'event_category': 'ecommerce_funnel',
+                                    ...utmData
                                 });
                             }
                         }
@@ -576,7 +577,12 @@
                                     ...utmData
                                 })
                             }).then(() => {
-                                if (typeof gtag !== 'undefined') gtag('event', 'generate_trial', { 'event_category': 'conversion' });
+                                if (typeof gtag !== 'undefined') {
+                                    gtag('event', 'generate_trial', { 
+                                        'event_category': 'conversion',
+                                        ...utmData 
+                                    });
+                                }
                                 window.location.href = 'exito.html';
                             }).catch(() => {
                                 window.location.href = 'exito.html';
