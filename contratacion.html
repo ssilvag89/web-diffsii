@@ -548,6 +548,9 @@
                             amount: totalCLP
                         };
 
+                        // Guardar datos temporalmente ANTES del return del Trial
+                        localStorage.setItem('pending_registration', JSON.stringify(pendingData));
+
                         if (planId === 'trial') {
                             const payBtn = document.querySelector('.btn-primary[onclick="redirectToWebpay()"]');
                             if(payBtn) {
@@ -581,7 +584,6 @@
                             return; // Stop here, bypass webpay
                         }
 
-                        localStorage.setItem('pending_registration', JSON.stringify(pendingData));
                         // Usar API de pago centralizada desde env
                         const baseUrl = window.ENV ? window.ENV.API_PAYMENT_URL : "https://webpay.diffsii.cl";
                         const apiUrl = `${baseUrl}/?amount=${totalCLP}&name=${encodeURIComponent(name)}&company=${encodeURIComponent(company)}&email=${encodeURIComponent(email)}&rut=${encodeURIComponent(rut)}&plan=${encodeURIComponent(planId)}&address=${encodeURIComponent(address)}&commune=${encodeURIComponent(commune)}&city=${encodeURIComponent(city)}&canal=externo`;
