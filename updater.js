@@ -201,7 +201,7 @@ const indexHtml = `<!DOCTYPE html>
                 <!-- Básico -->
                 <div class="plan-c">
                     <h3>Básico</h3>
-                    <div class="price">0.9 <span>UF/mes</span></div>
+                    <div class="price">0.5 <span>UF/mes</span></div>
                     <p style="font-size: 0.9rem; color: var(--text-muted);">Para pequeñas empresas y consultores individuales.</p>
                     <ul>
                         <li><i data-lucide="check"></i> <span>Hasta 200 docs. al mes</span></li>
@@ -216,7 +216,7 @@ const indexHtml = `<!DOCTYPE html>
                 <div class="plan-c featured">
                     <div style="background: var(--gradient-hero); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 100px; display: inline-block; margin-bottom: 15px;">RECOMENDADO</div>
                     <h3>Start</h3>
-                    <div class="price">1.9 <span>UF/mes</span></div>
+                    <div class="price">1 <span>UF/mes</span></div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); opacity: 0.8;">Para estudios contables y empresas dinámicas.</p>
                     <ul>
                         <li><i data-lucide="check"></i> <span>Hasta 1.000 docs. al mes</span></li>
@@ -231,7 +231,7 @@ const indexHtml = `<!DOCTYPE html>
                 <!-- Prime -->
                 <div class="plan-c">
                     <h3>Prime</h3>
-                    <div class="price">3.9 <span>UF/mes</span></div>
+                    <div class="price">2 <span>UF/mes</span></div>
                     <p style="font-size: 0.9rem; color: var(--text-muted);">Para operaciones logísticas y financieras intensivas.</p>
                     <ul>
                         <li><i data-lucide="check"></i> <span>Hasta 5.000 docs. al mes</span></li>
@@ -638,12 +638,12 @@ footer {
 fs.writeFileSync('index.html', indexHtml);
 fs.appendFileSync('style.css', extraCss);
 
-// Let's modify contratacion.html briefly to reflect the Básico plan at 0.9, Start at 1.9, Prime at 3.9
+// Let's modify contratacion.html briefly to reflect the Básico plan at 0.5, Start at 1, Prime at 2
 const contrPath = 'contratacion.html';
 let contrText = fs.readFileSync(contrPath, 'utf8');
-contrText = contrText.replace(/'basico': { name: 'Plan Básico', price: 1.0 }/, "'basico': { name: 'Plan Básico', price: 0.9 }");
-contrText = contrText.replace(/'start': { name: 'Plan Start', price: 1.5 }/, "'start': { name: 'Plan Start', price: 1.9 }");
-contrText = contrText.replace(/'prime': { name: 'Plan Prime', price: 2.0 }/, "'prime': { name: 'Plan Prime', price: 3.9 }");
+contrText = contrText.replace(/'basico': { name: 'Básico', price: 0.9 }/, "'basico': { name: 'Básico', price: 0.5 }");
+contrText = contrText.replace(/'start': { name: 'Start', price: 1.9 }/, "'start': { name: 'Start', price: 1 }");
+contrText = contrText.replace(/'prime': { name: 'Prime', price: 3.9 }/, "'prime': { name: 'Prime', price: 2 }");
 fs.writeFileSync(contrPath, contrText);
 
 console.log("SUCCESS");
