@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de API - DiffSii</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .content-page {
+            padding: 150px 5% 100px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-page h1 {
+            margin-bottom: 20px;
+            font-size: 3rem;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-page p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .content-page h2 {
+            color: var(--text-main);
+            margin-top: 50px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        .content-page h3 {
+            color: var(--text-main);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .content-page ul {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding-left: 20px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .content-page li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #a5b4fc;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e0e7ff;
+        }
+
+        .endpoint {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .endpoint strong {
+            color: #fff;
+        }
+
+        .method {
+            color: #34d399; /* Green for POST */
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            color: var(--text-muted);
+        }
+        
+        .alert-info strong {
+            color: #fff;
+        }
+        
+        .response-code {
+            font-weight: bold;
+            color: #fff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.1rem;
+        }
+        
+        .response-code.success { color: #34d399; }
+        .response-code.error { color: #f87171; }
+        .response-code.warning { color: #fbbf24; }
+
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo-wrapper">
+            <a href="index.html" style="text-decoration: none;">
+                <img src="logo.png" alt="DiffSii Logo" class="logo-img"
+                    style="height: 40px; width: auto; transform: scale(3.4); transform-origin: left center;">
+            </a>
+        </div>
+        <a href="index.html" class="btn-nav">Volver al Inicio</a>
+    </nav>
+
+    <main class="content-page">
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left"></i> Volver a la página principal
+        </a>
+
+        <h1>Documentación de Integración B2B - DiffSii API</h1>
+        
+        <p>Esta API REST permite a sistemas externos (ERPs, CRMs o software a medida) inyectar movimientos comerciales (Compras y Ventas) directamente a la base de datos de DiffSii. El sistema aplicará deduplicación inteligente, validación de periodos y asentar los movimientos contablemente de manera automática.</p>
+
+        <h2>1. Autenticación (Login)</h2>
+        <p>Todos los endpoints están protegidos y requieren un token de autorización (JWT). Para obtener este token, tu sistema debe autenticarse previamente.</p>
+        
+        <h3>Solicitar Token</h3>
+        <div class="endpoint"><span class="method">POST</span> <strong>/api/auth/login</strong></div>
+        
+        <p><strong>Body (JSON):</strong></p>
+<pre><code>{
+  "email": "usuario@tuempresa.cl",
+  "password": "tu_password_segura"
+}</code></pre>
+
+        <p><strong>Respuesta Exitosa (200 OK):</strong></p>
+<pre><code>{
+  "token": "eyJhbGciOiJIUzI1NiIsInR...",
+  "user": {
+    "id": 1,
+    "name": "Juan Perez",
+    "companies": [
+      {
+        "id": 10,
+        "name": "Empresa de Prueba SpA"
+      }
+    ]
+  }
+}</code></pre>
+
+        <div class="alert-info">
+            <strong>Importante:</strong> Conserva el valor de <code>token</code> para usarlo en el header de autorización, y anota el <code>id</code> de la empresa (<code>companyId</code>) en la cual vas a inyectar los documentos.
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
+
+        <h2>2. Inyección de Movimientos Masivos</h2>
+        <p>Este endpoint permite enviar un lote de facturas o boletas para un periodo contable específico.</p>
+        
+        <h3>Endpoint</h3>
+        <div class="endpoint"><span class="method">POST</span> <strong>/api/documents/company/{companyId}/upload-json</strong></div>
+        <p><em>(Reemplaza <code>{companyId}</code> por el ID de la empresa obtenido en el Login)</em></p>
+
+        <h3>Headers Requeridos</h3>
+        <ul>
+            <li><code>Authorization: Bearer {tu_token_aqui}</code></li>
+            <li><code>Content-Type: application/json</code></li>
+        </ul>
+
+        <h3>Estructura del Payload (JSON)</h3>
+<pre><code>{
+  "tipo": "ventas", 
+  "periodo": "2024-04",
+  "movimientos": [
+    {
+      "tipoDocumento": "33",
+      "folio": 14502,
+      "rutContraparte": "76123456-7",
+      "montoNeto": 100000,
+      "montoExento": 0,
+      "montoIva": 19000,
+      "montoTotal": 119000,
+      "fechaEmision": "2024-04-15"
+    }
+  ]
+}</code></pre>
+
+        <h3>Diccionario de Datos</h3>
+        <ul>
+            <li><strong>tipo:</strong> Obligatorio. Solo acepta "compras" o "ventas".</li>
+            <li><strong>periodo:</strong> Obligatorio. Formato YYYY-MM.</li>
+            <li><strong>tipoDocumento:</strong> Código tributario del SII (ej: "33", "39") o nombre descriptivo.</li>
+            <li><strong>folio:</strong> Número del documento (entero).</li>
+            <li><strong>rutContraparte:</strong> RUT del cliente o proveedor (con guion y dígito verificador).</li>
+            <li><strong>montoNeto</strong>, <strong>montoExento</strong>, <strong>montoIva</strong>, <strong>montoTotal</strong>: Valores numéricos enteros.</li>
+            <li><strong>fechaEmision:</strong> Fecha en formato YYYY-MM-DD.</li>
+        </ul>
+
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
+
+        <h2>3. Respuestas y Códigos de Error</h2>
+        
+        <span class="response-code success">201 Created (Inyección Exitosa)</span>
+        <p>Ocurre cuando la petición fue procesada y se inyectaron los registros exitosamente.</p>
+<pre><code>{
+  "message": "Registros insertados (Total: 1). Ignorados: 0.",
+  "records": 1,
+  "duplicates": 0
+}</code></pre>
+
+        <span class="response-code success">200 OK (Duplicados Detectados)</span>
+        <p>Ocurre si todos los registros que enviaste ya existen en la base de datos (mismo Folio, Tipo, RUT y Periodo). El sistema protege la integridad contable y los ignora automáticamente.</p>
+
+        <span class="response-code error">400 Bad Request</span>
+        <p>Error de formato en el JSON (ej. array vacío o tipo incorrecto).</p>
+
+        <span class="response-code error">403 Forbidden</span>
+        <p>Ocurre si el usuario del token no tiene permisos comerciales, o si intentas enviar más documentos del límite del plan.</p>
+
+        <span class="response-code warning">409 Conflict</span>
+        <p>El periodo ha sido cerrado de forma contable por el administrador. No se aceptan inyecciones.</p>
+
+    </main>
+
+    <footer style="margin-top: 50px; border-top: 1px solid var(--glass-border); padding: 40px 0; text-align: center;">
+        <p>&copy; 2026 DiffSii. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
