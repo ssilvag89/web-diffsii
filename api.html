@@ -358,25 +358,46 @@
             <li><strong>estado:</strong> (Opcional) Filtra por subestado del documento (ej: "Aceptado", "Pendiente", "Reclamado", "Excluido").</li>
         </ul>
 
-        <h3>Respuesta Exitosa (200 OK)</h3>
+        <h3>Respuestas y Códigos de Error - Servicio GET Movimientos</h3>
+
+        <span class="response-code success">200 OK (Éxito)</span>
+        <p>Ocurre cuando la petición es procesada correctamente. Devuelve la lista de movimientos registrados en la base de datos de DiffSii según los filtros aplicados.</p>
 <pre><code>{
   "success": true,
-  "count": 100,
+  "count": 2,
   "data": [
     {
-      "folio": 1234,
+      "id": 105,
+      "tipo": "ventas",
       "tipoDocumento": "33 - Factura electrónica",
-      "rutContraparte": "76123456-K",
-      "razonSocial": "Empresa de Prueba SpA",
-      "fechaEmision": "2024-05-10",
+      "folio": 14502,
+      "rutContraparte": "76123456-7",
       "montoNeto": 100000,
       "montoIva": 19000,
       "montoTotal": 119000,
-      "subTipo": "Aceptado",
-      "origen": "sii"
-    }
+      "periodo": "2024-04"
+    },
+    "... otros documentos ..."
   ]
 }</code></pre>
+
+        <span class="response-code error">401 Unauthorized</span>
+        <p>Ocurre cuando no se envía el header <code>Authorization</code> con un token JWT válido, o si el token ha expirado.</p>
+<pre><code>{
+  "error": "Token de autenticación inválido o no proporcionado."
+}</code></pre>
+
+        <span class="response-code error">403 Forbidden</span>
+        <p>Ocurre cuando el token es válido, pero el usuario no tiene los permisos suficientes asignados en la plataforma (RBAC) para el módulo solicitado (Compras o Ventas).</p>
+<pre><code>{
+  "error": "Tu usuario no tiene acceso concedido para solicitar información del módulo de Ventas."
+}</code></pre>
+        <div class="alert-info" style="margin-top: 10px;">
+            <strong>Nota:</strong> El mensaje variará indicando "Ventas" o "Compras" según corresponda al filtro enviado.
+        </div>
+
+        <span class="response-code error" style="margin-top: 30px; display: block;">500 Internal Server Error</span>
+        <p>Ocurre si hay un problema de conexión con la base de datos o un error inesperado al procesar la solicitud en el servidor.</p>
 
     </main>
     </div>
