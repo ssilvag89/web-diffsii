@@ -259,6 +259,47 @@
         <span class="response-code warning">409 Conflict</span>
         <p>El periodo ha sido cerrado de forma contable por el administrador. No se aceptan inyecciones.</p>
 
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
+
+        <h2>4. Descarga de Movimientos (Exportación)</h2>
+        <p>Este endpoint permite a sistemas externos recuperar los movimientos (compras o ventas) previamente inyectados y procesados, incluyendo su estado de cuadratura actual.</p>
+        
+        <h3>Endpoint</h3>
+        <div class="endpoint"><span class="method" style="color: #60a5fa;">GET</span> <strong>/api/documents/company/{companyId}/movements</strong></div>
+        <p><em>(Reemplaza <code>{companyId}</code> por el ID de la empresa obtenido en el Login)</em></p>
+
+        <h3>Headers Requeridos</h3>
+        <ul>
+            <li><code>Authorization: Bearer {tu_token_aqui}</code></li>
+        </ul>
+
+        <h3>Parámetros de Consulta (Query Params)</h3>
+        <ul>
+            <li><strong>periodo:</strong> (Opcional) Filtra los documentos de un mes específico (ej: "2024-05").</li>
+            <li><strong>tipo:</strong> (Opcional) Selecciona el libro contable ("compras" o "ventas").</li>
+            <li><strong>estado:</strong> (Opcional) Filtra por subestado del documento (ej: "Aceptado", "Pendiente", "Reclamado", "Excluido").</li>
+        </ul>
+
+        <h3>Respuesta Exitosa (200 OK)</h3>
+<pre><code>{
+  "success": true,
+  "count": 100,
+  "data": [
+    {
+      "folio": 1234,
+      "tipoDocumento": "33 - Factura electrónica",
+      "rutContraparte": "76123456-K",
+      "razonSocial": "Empresa de Prueba SpA",
+      "fechaEmision": "2024-05-10",
+      "montoNeto": 100000,
+      "montoIva": 19000,
+      "montoTotal": 119000,
+      "subTipo": "Aceptado",
+      "origen": "sii"
+    }
+  ]
+}</code></pre>
+
     </main>
 
     <footer style="margin-top: 50px; border-top: 1px solid var(--glass-border); padding: 40px 0; text-align: center;">
