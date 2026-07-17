@@ -246,10 +246,10 @@
             <p>Esta API REST permite a sistemas externos (ERPs, CRMs o software a medida) inyectar movimientos comerciales (Compras y Ventas) directamente a la base de datos de DiffSii. El sistema aplicará deduplicación inteligente, validación de periodos y asentar los movimientos contablemente de manera automática.</p>
 
             <h2 id="auth">1. Autenticación (Login)</h2>
-        <p>Todos los endpoints están protegidos y requieren un token de autorización (JWT). Para obtener este token, tu sistema debe autenticarse previamente.</p>
+        <p>Todos los endpoints están protegidos y requieren un token JWT. Para obtener el token, debes autenticarte en el endpoint general de DiffSii.</p>
         
-        <h3>Solicitar Token</h3>
-        <div class="endpoint"><span class="method">POST</span> <strong>/api/auth/login</strong></div>
+        <h3>Request: Obtener Token</h3>
+        <div class="endpoint"><span class="method">POST</span> <strong>/api/auth/login-local</strong></div>
         
         <p><strong>Body (JSON):</strong></p>
 <pre><code>{
