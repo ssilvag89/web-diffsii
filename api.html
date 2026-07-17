@@ -8,10 +8,77 @@
     <title>Documentación de API - DiffSii</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .content-page {
-            padding: 150px 5% 100px;
-            max-width: 900px;
+        .layout-wrapper {
+            display: flex;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 120px 5% 50px;
+            gap: 40px;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 120px;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+            border-right: 1px solid var(--glass-border);
+            padding-right: 20px;
+        }
+
+        .sidebar h3 {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar a:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .content-page {
+            flex: 1;
+            min-width: 0;
+            max-width: 900px;
+        }
+
+        @media (max-width: 768px) {
+            .layout-wrapper {
+                flex-direction: column;
+                padding-top: 100px;
+            }
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding-bottom: 20px;
+            }
         }
 
         .content-page h1 {
@@ -151,16 +218,27 @@
         <a href="index.html" class="btn-nav">Volver al Inicio</a>
     </nav>
 
-    <main class="content-page">
-        <a href="index.html" class="back-link">
-            <i data-lucide="arrow-left"></i> Volver a la página principal
-        </a>
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <h3>Navegación API</h3>
+            <ul>
+                <li><a href="#auth">1. Autenticación</a></li>
+                <li><a href="#upload">2. Inyección de Movimientos</a></li>
+                <li><a href="#responses">3. Respuestas y Errores</a></li>
+                <li><a href="#export">4. Descarga (Exportación)</a></li>
+            </ul>
+        </aside>
 
-        <h1>Documentación de Integración B2B - DiffSii API</h1>
-        
-        <p>Esta API REST permite a sistemas externos (ERPs, CRMs o software a medida) inyectar movimientos comerciales (Compras y Ventas) directamente a la base de datos de DiffSii. El sistema aplicará deduplicación inteligente, validación de periodos y asentar los movimientos contablemente de manera automática.</p>
+        <main class="content-page">
+            <a href="index.html" class="back-link">
+                <i data-lucide="arrow-left"></i> Volver a la página principal
+            </a>
 
-        <h2>1. Autenticación (Login)</h2>
+            <h1>Documentación de Integración B2B - DiffSii API</h1>
+            
+            <p>Esta API REST permite a sistemas externos (ERPs, CRMs o software a medida) inyectar movimientos comerciales (Compras y Ventas) directamente a la base de datos de DiffSii. El sistema aplicará deduplicación inteligente, validación de periodos y asentar los movimientos contablemente de manera automática.</p>
+
+            <h2 id="auth">1. Autenticación (Login)</h2>
         <p>Todos los endpoints están protegidos y requieren un token de autorización (JWT). Para obtener este token, tu sistema debe autenticarse previamente.</p>
         
         <h3>Solicitar Token</h3>
@@ -193,7 +271,7 @@
 
         <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
 
-        <h2>2. Inyección de Movimientos Masivos</h2>
+        <h2 id="upload">2. Inyección de Movimientos Masivos</h2>
         <p>Este endpoint permite enviar un lote de facturas o boletas para un periodo contable específico.</p>
         
         <h3>Endpoint</h3>
@@ -237,7 +315,7 @@
 
         <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
 
-        <h2>3. Respuestas y Códigos de Error</h2>
+        <h2 id="responses">3. Respuestas y Códigos de Error</h2>
         
         <span class="response-code success">201 Created (Inyección Exitosa)</span>
         <p>Ocurre cuando la petición fue procesada y se inyectaron los registros exitosamente.</p>
@@ -261,7 +339,7 @@
 
         <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 40px 0;">
 
-        <h2>4. Descarga de Movimientos (Exportación)</h2>
+        <h2 id="export">4. Descarga de Movimientos (Exportación)</h2>
         <p>Este endpoint permite a sistemas externos recuperar los movimientos (compras o ventas) previamente inyectados y procesados, incluyendo su estado de cuadratura actual.</p>
         
         <h3>Endpoint</h3>
@@ -301,6 +379,7 @@
 }</code></pre>
 
     </main>
+    </div>
 
     <footer style="margin-top: 50px; border-top: 1px solid var(--glass-border); padding: 40px 0; text-align: center;">
         <p>&copy; 2026 DiffSii. Todos los derechos reservados.</p>
