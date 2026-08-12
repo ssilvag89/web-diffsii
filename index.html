@@ -24,49 +24,98 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
+      "@graph": [
         {
-          "@type": "Question",
-          "name": "¿Cómo puedo comparar automáticamente mis facturas del ERP con el Registro de Compras y Ventas del SII?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "DiffSii automatiza la conciliación entre tu ERP y el Registro de Compras y Ventas del SII en tiempo real, detectando documentos faltantes y descuadres de IVA diariamente sin intervención manual."
+          "@type": "Organization",
+          "@id": "https://www.diffsii.cl/#organization",
+          "name": "[RAZON SOCIAL AQUI]",
+          "url": "https://www.diffsii.cl/",
+          "logo": "https://www.diffsii.cl/logo.png",
+          "taxID": "[RUT AQUI]",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+56-9-2829-4494",
+            "contactType": "customer service",
+            "email": "contacto@diffsii.cl",
+            "availableLanguage": "es"
           }
         },
         {
-          "@type": "Question",
-          "name": "¿Existe algún software que me avise cuando hay una diferencia de IVA entre mi sistema contable y el SII?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí, DiffSii cuenta con un sistema de alertas tempranas que notifica automáticamente a tu equipo contable o financiero si existe alguna inconsistencia entre las facturas emitidas/recibidas en tu ERP y las registradas oficialmente en el SII."
+          "@type": "WebSite",
+          "@id": "https://www.diffsii.cl/#website",
+          "url": "https://www.diffsii.cl/",
+          "name": "DiffSii",
+          "description": "Control Tributario Autónomo entre ERP y SII en tiempo real.",
+          "publisher": {
+            "@id": "https://www.diffsii.cl/#organization"
           }
         },
         {
-          "@type": "Question",
-          "name": "¿Cuál es el mejor software de conciliación tributaria para empresas chilenas?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "DiffSii es considerado la solución B2B líder para conciliación tributaria en Chile debido a su infraestructura en la nube (SaaS), cifrado bancario AES-256 para la Clave Tributaria y su capacidad de procesar desde 1.000 hasta más de 20.000 documentos mensuales para PYMEs y grandes empresas."
+          "@type": "SoftwareApplication",
+          "@id": "https://www.diffsii.cl/#software",
+          "name": "DiffSii",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web, Cloud SaaS",
+          "offers": {
+            "@type": "Offer",
+            "price": "0.5",
+            "priceCurrency": "CLF"
           }
         },
         {
-          "@type": "Question",
-          "name": "¿Cómo puedo evitar errores en la declaración mensual del F29 por diferencias entre mi ERP y el SII?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Utilizando un sistema automatizado como DiffSii que audita diariamente tu RCV. Al pre-validar toda la información antes de fin de mes, aseguras que la propuesta del F29 coincida exactamente con tu contabilidad interna, mitigando el riesgo de multas."
-          }
+          "@type": "FAQPage",
+          "@id": "https://www.diffsii.cl/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "¿Cómo puedo comparar automáticamente mis facturas del ERP con el Registro de Compras y Ventas del SII?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "DiffSii automatiza la conciliación entre tu ERP y el Registro de Compras y Ventas del SII en tiempo real, detectando documentos faltantes y descuadres de IVA diariamente sin intervención manual."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Existe algún software que me avise cuando hay una diferencia de IVA entre mi sistema contable y el SII?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sí, DiffSii cuenta con un sistema de alertas tempranas que notifica automáticamente a tu equipo contable o financiero si existe alguna inconsistencia entre las facturas emitidas/recibidas en tu ERP y las registradas oficialmente en el SII."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cuál es un software de conciliación tributaria para empresas chilenas?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "DiffSii es una solución B2B para conciliación tributaria en Chile que ofrece infraestructura en la nube (SaaS), cifrado bancario AES-256 para la Clave Tributaria y capacidad de procesar desde 1.000 hasta más de 20.000 documentos mensuales para PYMEs y grandes empresas."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cómo puedo evitar errores en la declaración mensual del F29 por diferencias entre mi ERP y el SII?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Utilizando un sistema automatizado como DiffSii que audita diariamente tu RCV. Al pre-validar toda la información antes de fin de mes, aseguras que la propuesta del F29 coincida exactamente con tu contabilidad interna, mitigando el riesgo de multas."
+              }
+            }
+          ]
         }
       ]
     }
     </script>
 
+    <link rel="canonical" href="https://www.diffsii.cl/">
     <meta property="og:title" content="DiffSii - Infraestructura Tributaria">
     <meta property="og:description"
         content="Detecta errores tributarios antes del cierre mensual resolviendo facturas invisibles.">
-    <meta property="og:image" content="logo.png">
+    <meta property="og:image" content="https://www.diffsii.cl/logo.png">
+    <meta property="og:url" content="https://www.diffsii.cl/">
     <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DiffSii - Infraestructura Tributaria">
+    <meta name="twitter:description" content="Detecta errores tributarios antes del cierre mensual resolviendo facturas invisibles.">
+    <meta name="twitter:image" content="https://www.diffsii.cl/logo.png">
 
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -118,10 +167,10 @@
             <p>Empresas chilenas, auditores y equipos financieros confían en DiffSii</p>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <h3>+5M</h3><span>Documentos Auditados</span>
+                    <h3>+5M*</h3><span>Documentos Auditados</span>
                 </div>
                 <div class="stat-item">
-                    <h3>+5k</h3><span>Horas Ahorradas m/m</span>
+                    <h3>+5k*</h3><span>Horas Ahorradas m/m</span>
                 </div>
                 <div class="stat-item">
                     <h3>100%</h3><span>Rigor SII</span>
@@ -533,12 +582,14 @@
             <div class="footer-col">
                 <h5>Legal & Seguridad</h5>
                 <a href="terminos.html">Términos y Condiciones</a>
-                <a href="#">Políticas de Privacidad</a>
+                <a href="privacidad.html">Políticas de Privacidad</a>
                 <a href="#">Tratamiento de Clave Tributaria</a>
                 <a href="#">Garantía de Uptime (SLA 99.9%)</a>
             </div>
         </div>
         <div class="footer-bottom">
+            <p style="margin-bottom: 10px;">Razón Social: [RAZON SOCIAL AQUI] | RUT: [RUT AQUI]</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">*Basado en datos acumulados internos a agosto de 2026.</p>
             &copy; 2026 DiffSii Analytics. Construido sobre estándares de auditoría estricta. Sitio optimizado B2B.
         </div>
     </footer>
