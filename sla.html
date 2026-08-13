@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garantía de Uptime (SLA) - DiffSii</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .content-page {
+            padding: 150px 5% 100px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-page h1 {
+            margin-bottom: 40px;
+            font-size: 3rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .legal-text {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .legal-text h2 {
+            color: var(--text-main);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo-wrapper">
+            <a href="index.html" style="text-decoration: none;">
+                <img src="logo.png" alt="DiffSii Logo" class="logo-img"
+                    style="height: 40px; width: auto; transform: scale(3.4); transform-origin: left center;">
+            </a>
+        </div>
+        <a href="index.html" class="btn-nav">Volver al Inicio</a>
+    </nav>
+
+    <main class="content-page">
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left"></i> Volver a la página principal
+        </a>
+
+        <h1>Garantía de Uptime (SLA 99.9%)</h1>
+
+        <div class="legal-text">
+            <p>Última actualización: 12 de Agosto de 2026</p>
+
+            <h2>1. Compromiso de Nivel de Servicio</h2>
+            <p>DiffSii se compromete a mantener una disponibilidad operativa (Uptime) de la plataforma SaaS del 99.9% durante cada ciclo de facturación mensual. Entendemos que la conciliación tributaria es un proceso crítico y nuestra infraestructura en la nube está diseñada para alta disponibilidad.</p>
+
+            <h2>2. Definición de Disponibilidad</h2>
+            <p>La disponibilidad se calcula restando del 100% el porcentaje de minutos durante el mes en los que el servicio estuvo en un estado de "Indisponibilidad". La indisponibilidad ocurre cuando la plataforma es inaccesible debido a fallas de nuestros servidores principales, excluyendo factores externos como caídas masivas de Internet, fallas en la API del SII o del proveedor del ERP del cliente.</p>
+
+            <h2>3. Ventanas de Mantenimiento</h2>
+            <p>Las ventanas de mantenimiento programado no se consideran tiempo de inactividad. DiffSii notificará a los clientes con al menos 48 horas de antelación sobre cualquier mantenimiento que requiera suspender el servicio temporalmente. Estas ventanas se programarán en horarios de bajo impacto (generalmente fines de semana de madrugada).</p>
+
+            <h2>4. Compensación por Incumplimiento</h2>
+            <p>Si DiffSii no cumple con el SLA del 99.9% en un mes determinado, el cliente tendrá derecho a solicitar un crédito de servicio proporcional al tiempo de inactividad excedido, el cual será aplicado en la factura del mes siguiente, asegurando nuestro compromiso financiero con la estabilidad operativa.</p>
+        </div>
+    </main>
+
+    <footer style="margin-top: 100px; border-top: 1px solid var(--glass-border); padding: 40px 0; text-align: center;">
+        <p>&copy; 2026 DiffSii. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
