@@ -6,17 +6,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    /* Colors */
-    --bg-main: #0a0a0a;
-    --bg-accent: #111111;
-    --primary: #5c62ec; /* Adjusted Indigo */
-    --primary-glow: rgba(92, 98, 236, 0.35);
-    --secondary: #9333ea; /* More vibrant violet */
-    --text-main: #ffffff;
-    --text-muted: #94a3b8;
-    --glass-bg: rgba(255, 255, 255, 0.03);
+    /* Colors - Thala Theme Minimalist */
+    --bg-main: #0B0B14;
+    --bg-accent: #131220;
+    --primary: #9E6CFF; /* Neon Purple */
+    --primary-glow: rgba(158, 108, 255, 0.35);
+    --secondary: #52D5FF; /* Neon Cyan */
+    --text-main: #FFFFFF;
+    --text-muted: #B4A9C8;
+    --glass-bg: rgba(255, 255, 255, 0.015);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --gradient-hero: linear-gradient(135deg, var(--primary), var(--secondary));
+    --gradient-hero: linear-gradient(135deg, var(--primary), #ffffff);
     
     /* Spacing */
     --section-pad: 100px 5%;
@@ -37,9 +37,6 @@ html {
 
 body {
     background-color: var(--bg-main);
-    background-image: 
-        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
-    background-size: 40px 40px;
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
@@ -162,18 +159,18 @@ nav {
 }
 
 .btn-nav {
-    padding: 10px 24px;
-    background: var(--gradient-hero);
+    padding: 8px 24px;
+    background: #ffffff;
     border: none;
-    border-radius: 8px;
-    color: white;
+    border-radius: 100px;
+    color: #000000;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
 }
 
 .btn-nav:hover {
-    box-shadow: 0 0 20px var(--primary-glow);
+    box-shadow: 0 0 20px rgba(255,255,255, 0.3);
     transform: translateY(-2px);
 }
 
@@ -236,20 +233,20 @@ nav {
 }
 
 .btn-primary {
-    padding: 16px 32px;
-    background: var(--gradient-hero);
-    border: none;
-    border-radius: 12px;
+    padding: 14px 32px;
+    background: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 100px;
     color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
 }
 
 .btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(158, 108, 255, 0.4);
 }
 
 /* --- Features Section --- */
@@ -324,17 +321,21 @@ nav {
 .feature-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
+    border-radius: 16px;
     padding: 40px;
     transition: var(--transition);
     position: relative;
     overflow: hidden;
 }
 
+/* Thala-style top color edge for the first 3 cards */
+.feature-card:nth-child(3n+1) { border-top: 1px solid #FFE600; }
+.feature-card:nth-child(3n+2) { border-top: 1px solid #52D5FF; }
+.feature-card:nth-child(3n) { border-top: 1px solid #9E6CFF; }
+
 .feature-card:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: var(--primary);
-    transform: translateY(-10px);
+    background: rgba(255,255,255,0.03);
+    transform: translateY(-5px);
 }
 
 .feature-icon {
@@ -745,10 +746,11 @@ footer {
     gap: 30px;
 }
 .danger-card {
-    background: linear-gradient(180deg, rgba(239, 68, 68, 0.03), transparent);
-    border: 1px solid rgba(239, 68, 68, 0.15);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-top: 1px solid #FF3366;
     padding: 35px;
-    border-radius: 20px;
+    border-radius: 16px;
     text-align: left;
 }
 .danger-card h4 { font-size: 1.3rem; margin-bottom: 12px; }
@@ -761,17 +763,17 @@ footer {
     position: relative;
 }
 .step-card {
-    background: rgba(255,255,255,0.02);
+    background: var(--glass-bg);
     border: 1px solid var(--glass-border);
+    border-top: 1px solid var(--primary);
     padding: 40px;
-    border-radius: 20px;
+    border-radius: 16px;
     text-align: center;
     transition: var(--transition);
 }
 .step-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(92, 98, 236, 0.5);
-    box-shadow: 0 15px 45px rgba(92, 98, 236, 0.1);
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.03);
 }
 .step-number {
     width: 60px;
@@ -790,9 +792,9 @@ footer {
 .step-card p { color: var(--text-muted); line-height: 1.6; }
 
 .security-section {
-    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
-    border-top: 1px solid rgba(16, 185, 129, 0.1);
-    border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    background: transparent;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
     padding: 120px 5%;
 }
 .sec-card { background: rgba(0,0,0,0.6); padding: 30px; }
@@ -808,9 +810,9 @@ footer {
 
 .plan-c { 
     padding: 40px 30px; 
-    border-radius: 20px; 
+    border-radius: 16px; 
     text-align: left; 
-    background: rgba(255,255,255,0.02); 
+    background: var(--glass-bg); 
     border: 1px solid var(--glass-border); 
     display: flex;
     flex-direction: column;
@@ -822,10 +824,9 @@ footer {
 .plan-c li { margin-bottom: 18px; display: flex; gap: 12px; font-size: 0.95rem; color: #e2e8f0; }
 .plan-c i { color: var(--primary); width: 18px; flex-shrink: 0; }
 .plan-c.featured { 
-    border: 2px solid var(--primary); 
-    background: rgba(92, 98, 236, 0.05); 
+    border-top: 1px solid var(--primary); 
+    background: rgba(158, 108, 255, 0.02); 
     transform: scale(1.05); 
-    box-shadow: 0 20px 50px rgba(92, 98, 236, 0.15);
 }
 .plan-c.featured h3 { color: var(--primary); }
 
@@ -837,7 +838,7 @@ footer {
     margin: 0 auto;
 }
 .faq-item {
-    background: rgba(255,255,255,0.02);
+    background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     padding: 30px;
     border-radius: 16px;
@@ -849,7 +850,7 @@ footer {
 .cta-final {
     text-align: center;
     padding: 120px 5%;
-    background: linear-gradient(180deg, transparent, rgba(92, 98, 236, 0.1));
+    background: transparent;
 }
 .cta-final h2 { font-size: 3.5rem; margin-bottom: 20px; letter-spacing: -1.5px; }
 

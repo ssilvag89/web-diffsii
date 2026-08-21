@@ -255,7 +255,7 @@ const indexHtml = `<!DOCTYPE html>
                         <li><i data-lucide="check"></i> <span>SLA Garantizado (99.9%)</span></li>
                         <li><i data-lucide="check"></i> <span>API Privada</span></li>
                     </ul>
-                    <a href="#demo" class="btn-primary" style="display: block; text-align: center; background: transparent; border: 1px solid var(--text-muted); color: #fff; text-decoration: none; padding: 12px; border-radius: 8px;">Contactar Ventas</a>
+                    <a href="#demo" class="btn-nav" style="display: block; text-align: center; text-decoration: none; padding: 12px; margin-top: auto;">Contactar Ventas</a>
                 </div>
             </div>
         </section>
