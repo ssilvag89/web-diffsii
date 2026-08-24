@@ -46,33 +46,33 @@ body {
 
 .glow {
     position: fixed;
-    width: 600px;
-    height: 600px;
+    width: 700px;
+    height: 700px;
     border-radius: 50%;
-    filter: blur(120px);
+    filter: blur(150px);
     z-index: -1;
     pointer-events: none;
-    opacity: 0.25;
+    opacity: 0.15;
 }
 
 .glow-1 {
-    top: -150px;
-    right: -150px;
+    top: -100px;
+    right: -100px;
     background: radial-gradient(circle, var(--primary), transparent 70%);
-    animation: glowFloat1 15s infinite alternate ease-in-out;
+    animation: glowFloat1 40s infinite alternate ease-in-out;
 }
 
 .glow-2 {
     bottom: -150px;
     left: -150px;
     background: radial-gradient(circle, var(--secondary), transparent 70%);
-    animation: glowFloat2 18s infinite alternate-reverse ease-in-out;
+    animation: glowFloat2 45s infinite alternate-reverse ease-in-out;
 }
 
 @keyframes glowFloat1 {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-100px, 100px) scale(1.2); }
-    100% { transform: translate(50px, -50px) scale(1); }
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(-100px, 150px) scale(1.2) rotate(5deg); }
+    100% { transform: translate(50px, -50px) scale(1) rotate(0deg); }
 }
 
 @keyframes glowFloat2 {
