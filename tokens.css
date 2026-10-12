@@ -1,0 +1,47 @@
+/* Referencia: integrar en los tokens y selector de tema existentes.
+   No importar a ciegas si el proyecto ya define un sistema de diseño. */
+:root {
+  --diffsii-brand-primary: #5C62EC;
+  --diffsii-brand-secondary: #9333EA;
+  --diffsii-brand-charcoal: #111111;
+  --diffsii-brand-white: #FFFFFF;
+  --diffsii-brand-muted: #94A3B8;
+  --diffsii-primary: #5C62EC;
+  --diffsii-primary-hover: #4B50CF;
+  --diffsii-on-primary: #FFFFFF;
+  --diffsii-secondary: #9333EA;
+  --diffsii-on-secondary: #FFFFFF;
+  --diffsii-bg: #FFFFFF;
+  --diffsii-surface: #FFFFFF;
+  --diffsii-surface-subtle: #F8FAFC;
+  --diffsii-text: #111111;
+  --diffsii-text-muted: #475569;
+  --diffsii-border: #CBD5E1;
+  --diffsii-control-border: #64748B;
+  --diffsii-focus: #5C62EC;
+  --diffsii-link: #4B50CF;
+  --diffsii-selection-bg: #EEF0FF;
+  --diffsii-selection-text: #3D42B8;
+  --diffsii-success: #15803D;
+  --diffsii-warning: #92400E;
+  --diffsii-danger: #B91C1C;
+  --diffsii-info: #0369A1;
+}
+/* Adaptar estos selectores al mecanismo REAL del proyecto. */
+:root[data-theme="dark"], :root.dark {
+  --diffsii-bg: #0A0A0A;
+  --diffsii-surface: #111111;
+  --diffsii-surface-subtle: #1E1E2A;
+  --diffsii-text: #FFFFFF;
+  --diffsii-text-muted: #94A3B8;
+  --diffsii-border: #334155;
+  --diffsii-control-border: #94A3B8;
+  --diffsii-focus: #A5A9FF;
+  --diffsii-link: #A5A9FF;
+  --diffsii-selection-bg: #252744;
+  --diffsii-selection-text: #C7CAFF;
+  --diffsii-success: #4ADE80;
+  --diffsii-warning: #FBBF24;
+  --diffsii-danger: #F87171;
+  --diffsii-info: #38BDF8;
+}
