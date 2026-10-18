@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD3H1EKJ0K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FD3H1EKJ0K');
+    </script>
+    <script src="env-config.js"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="assets/icons/Icono_180.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de Integración DTE | Emisión electrónica para ERPs | DiffSii</title>
+    <meta name="description"
+        content="Documentación técnica para emitir DTE desde un ERP. DiffSii firma, timbra y envía al SII. Endpoints REST, autenticación JWT, PDF y folios CAF.">
+    <meta name="keywords"
+        content="api dte chile, emitir factura electronica api, integracion sii erp, timbraje dte, software de mercado, diffsii api">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.diffsii.cl/#organization",
+          "name": "DiffSii",
+          "url": "https://www.diffsii.cl/"
+        },
+        {
+          "@type": "TechArticle",
+          "@id": "https://www.diffsii.cl/integracionDTE.html#article",
+          "url": "https://www.diffsii.cl/integracionDTE.html",
+          "headline": "API de Integración DTE DiffSii",
+          "description": "Documentación para emitir Documentos Tributarios Electrónicos desde un ERP. DiffSii firma, timbra y envía al SII.",
+          "inLanguage": "es-CL",
+          "author": { "@id": "https://www.diffsii.cl/#organization" }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.diffsii.cl/" },
+            { "@type": "ListItem", "position": 2, "name": "API B2B", "item": "https://www.diffsii.cl/api.html" },
+            { "@type": "ListItem", "position": 3, "name": "Integración DTE", "item": "https://www.diffsii.cl/integracionDTE.html" }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <link rel="canonical" href="https://www.diffsii.cl/integracionDTE.html">
+    <meta property="og:title" content="API de Integración DTE | DiffSii">
+    <meta property="og:description" content="Emite facturas electrónicas desde tu ERP. DiffSii firma, timbra y envía al SII.">
+    <meta property="og:image" content="https://www.diffsii.cl/logo.png">
+    <meta property="og:url" content="https://www.diffsii.cl/integracionDTE.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="API de Integración DTE | DiffSii">
+    <meta name="twitter:description" content="Documentación REST para emitir DTE: firma, timbraje y envío al SII.">
+    <meta name="twitter:image" content="https://www.diffsii.cl/logo.png">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .layout-wrapper {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 5% 50px;
+            gap: 40px;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 120px;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+            border-right: 1px solid var(--glass-border);
+            padding-right: 20px;
+        }
+
+        .sidebar h3 {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li { margin-bottom: 8px; }
+
+        .sidebar a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .content-page {
+            flex: 1;
+            min-width: 0;
+            max-width: 900px;
+        }
+
+        .content-page h1 {
+            margin-bottom: 20px;
+            font-size: 2.6rem;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-page p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+        }
+
+        .content-page h2 {
+            color: var(--text-main);
+            margin-top: 50px;
+            margin-bottom: 18px;
+            font-size: 1.7rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        .content-page h3 {
+            color: var(--text-main);
+            margin-top: 28px;
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+        }
+
+        .content-page ul, .content-page ol {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .back-link {
+            display: inline-flex;
+            margin-bottom: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #a5b4fc;
+            font-size: 0.92rem;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e0e7ff;
+        }
+
+        .endpoint {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+            margin-bottom: 18px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            word-break: break-all;
+        }
+
+        .method {
+            color: #34d399;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .method.get { color: #60a5fa; }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            color: var(--text-muted);
+        }
+
+        .alert-info strong { color: #fff; }
+
+        .response-code {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.05rem;
+        }
+
+        .response-code.success { color: #34d399; }
+        .response-code.error { color: #f87171; }
+        .response-code.warning { color: #fbbf24; }
+
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 24px;
+            font-size: 0.95rem;
+        }
+
+        .doc-table th,
+        .doc-table td {
+            border-bottom: 1px solid var(--glass-border);
+            padding: 10px 12px;
+            text-align: left;
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+
+        .doc-table th {
+            color: var(--text-main);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .base-url {
+            font-family: monospace;
+            color: #c7d2fe;
+        }
+
+        @media (max-width: 768px) {
+            .layout-wrapper {
+                flex-direction: column;
+                padding-top: 100px;
+            }
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding-bottom: 20px;
+            }
+            .content-page h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <nav>
+        <div class="logo-wrapper">
+            <a href="index.html">
+                <img src="assets/logos/Logo_Fondo_Oscuro.svg" alt="DiffSii" class="logo-img" width="160" height="51">
+            </a>
+        </div>
+        <div class="nav-links flex-nav-desktop">
+            <a href="index.html#problema">Solución</a>
+            <a href="index.html#seguridad">Seguridad</a>
+            <a href="index.html#planes">Planes</a>
+            <a href="api.html">API B2B</a>
+            <a href="nosotros.html">Nosotros</a>
+        </div>
+        <div class="flex-nav-actions">
+            <a href="https://saas.diffsii.cl" class="btn-ghost"
+                style="color: var(--text-main); text-decoration: none; font-weight: 500; font-size: 0.95rem;">Ingresar</a>
+            <a href="contratacion.html?plan=trial" class="btn-nav" style="text-decoration: none;">Prueba Gratis</a>
+        </div>
+    </nav>
+
+    <div class="layout-wrapper">
+        <aside class="sidebar">
+            <h3>Integración DTE</h3>
+            <ul>
+                <li><a href="#flujo">Flujo</a></li>
+                <li><a href="#auth">Autenticación</a></li>
+                <li><a href="#emitir">Emitir DTE</a></li>
+                <li><a href="#ejemplos">Ejemplos</a></li>
+                <li><a href="#campos">Campos</a></li>
+                <li><a href="#respuesta">Respuesta y PDF</a></li>
+                <li><a href="#consultar">Consultar DTE</a></li>
+                <li><a href="#folio">Siguiente folio</a></li>
+                <li><a href="#errores">Errores</a></li>
+                <li><a href="#requisitos">Requisitos</a></li>
+            </ul>
+        </aside>
+
+        <main class="content-page">
+            <a href="api.html" class="back-link">
+                <i data-lucide="arrow-left"></i> Documentación API B2B
+            </a>
+
+            <h1>API de Integración DTE</h1>
+            <p>
+                Permite a un ERP, CRM o software a medida emitir Documentos Tributarios Electrónicos.
+                El integrador envía solo la información comercial (receptor, ítems, fechas).
+                DiffSii completa el emisor, asigna folio CAF, firma con el certificado digital, timbra y envía el DTE al SII.
+            </p>
+            <p>
+                Base URL de producción: <span class="base-url">https://saas.diffsii.cl</span>
+            </p>
+
+            <div class="alert-info">
+                <strong>El integrador no envía XML ni firma.</strong> Tampoco debe mandar datos del emisor: se toman de la ficha de la empresa en DiffSii.
+            </div>
+
+            <h2 id="flujo">Qué hace DiffSii en cada emisión</h2>
+            <ol>
+                <li>Valida el payload (RUT, tipo DTE, ítems, referencias).</li>
+                <li>Completa el emisor desde la empresa autenticada.</li>
+                <li>Reserva el siguiente folio CAF (Software de Mercado) o deja que Mipyme lo asigne.</li>
+                <li>Firma, timbra (TED) y envía el sobre al SII.</li>
+                <li>Registra el documento en el libro de ventas y devuelve folio, trackId y <code>pdfUrl</code>.</li>
+            </ol>
+
+            <h2 id="auth">Autenticación</h2>
+            <p>Todos los endpoints de emisión requieren JWT. Obtén el token con un usuario de la empresa (idealmente un usuario técnico de integración).</p>
+
+            <h3>Obtener token</h3>
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/auth/login-local</strong></div>
+            <p>Request:</p>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/auth/login-local" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "integracion@tuempresa.cl",
+    "password": "tu_password_segura"
+  }'</code></pre>
+            <p>Body:</p>
+<pre><code>{
+  "email": "integracion@tuempresa.cl",
+  "password": "tu_password_segura"
+}</code></pre>
+            <p>Respuesta 200:</p>
+<pre><code>{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+    "name": "Integración ERP",
+    "email": "integracion@tuempresa.cl",
+    "companies": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "name": "Empresa de Prueba SpA",
+        "rut": "76111111-1"
+      }
+    ]
+  }
+}</code></pre>
+            <div class="alert-info">
+                Conserva el <code>token</code> para el header <code>Authorization: Bearer</code>
+                y el <code>id</code> de la empresa como <code>companyId</code> (también en <code>X-Company-ID</code>).
+                En los ejemplos siguientes se usa
+                <code>a1b2c3d4-e5f6-7890-abcd-ef1234567890</code>.
+            </div>
+
+            <h2 id="emitir">Emitir DTE</h2>
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/integration/companies/{companyId}/dte</strong></div>
+
+            <h3>Headers</h3>
+            <ul>
+                <li><code>Authorization: Bearer {token}</code></li>
+                <li><code>Content-Type: application/json</code></li>
+                <li><code>X-Company-ID: {companyId}</code> (recomendado)</li>
+            </ul>
+
+            <h3>Request completo (Factura afecta 33)</h3>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "tipoDte": 33,
+    "fechaEmision": "2026-10-17",
+    "fechaVencimiento": "2026-11-16",
+    "formaPago": 2,
+    "referenciaExterna": "ERP-OC-9988",
+    "receptor": {
+      "rut": "76123456-0",
+      "razonSocial": "Cliente Demo SpA",
+      "giro": "Comercio al por mayor",
+      "direccion": "Av. Apoquindo 100",
+      "comuna": "Las Condes",
+      "ciudad": "Santiago",
+      "contacto": "compras@clientedemo.cl"
+    },
+    "items": [
+      {
+        "codigo": "SKU-01",
+        "nombre": "Servicio de consultoría",
+        "cantidad": 1,
+        "unidad": "UN",
+        "precio": 100000,
+        "descuentoPct": 0,
+        "exento": false
+      },
+      {
+        "codigo": "SKU-02",
+        "nombre": "Horas extra de implementación",
+        "cantidad": 4,
+        "unidad": "HR",
+        "precio": 25000,
+        "descuentoPct": 10,
+        "exento": false
+      }
+    ],
+    "referencias": [],
+    "descuentoGlobalPct": 0,
+    "includeXml": false
+  }'</code></pre>
+
+            <ul>
+                <li><code>folio</code> es opcional. Si se omite, DiffSii reserva el siguiente folio CAF o lo asigna Mipyme.</li>
+                <li><code>referenciaExterna</code> es la llave de idempotencia: si se repite, se responde el DTE ya emitido sin reenviar al SII.</li>
+                <li><code>includeXml: true</code> agrega <code>xmlDte</code> en la respuesta.</li>
+            </ul>
+
+            <h2 id="ejemplos">Ejemplos por tipo de DTE</h2>
+            <p>
+                Reemplaza el token y el <code>companyId</code>. Los totales (neto, IVA, total) los calcula DiffSii;
+                no los envíes. El emisor tampoco: sale de la ficha de la empresa.
+            </p>
+
+            <h3>Factura exenta (34)</h3>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "tipoDte": 34,
+    "fechaEmision": "2026-10-17",
+    "formaPago": 2,
+    "referenciaExterna": "ERP-EXENTA-120",
+    "receptor": {
+      "rut": "76123456-0",
+      "razonSocial": "Cliente Demo SpA",
+      "giro": "Educación",
+      "direccion": "Av. Apoquindo 100",
+      "comuna": "Las Condes",
+      "ciudad": "Santiago"
+    },
+    "items": [
+      {
+        "codigo": "CAP-01",
+        "nombre": "Capacitación profesional exenta",
+        "cantidad": 2,
+        "unidad": "UN",
+        "precio": 150000,
+        "exento": true
+      }
+    ]
+  }'</code></pre>
+            <p>Respuesta 201 (IVA en 0):</p>
+<pre><code>{
+  "exito": true,
+  "folio": 88,
+  "tipoDte": 34,
+  "trackId": "1234567891",
+  "estado": "ENVIADO",
+  "modalidad": "software_mercado",
+  "fechaEmision": "2026-10-17",
+  "receptor": { "rut": "76123456-0", "razonSocial": "Cliente Demo SpA" },
+  "totales": { "neto": 0, "exento": 300000, "iva": 0, "total": 300000 },
+  "referenciaExterna": "ERP-EXENTA-120",
+  "documentoId": "9f1c2e3a-4b5d-6789-abcd-111122223333",
+  "pdfUrl": "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/34/88/pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "detalle": null
+}</code></pre>
+
+            <h3>Boleta afecta (39)</h3>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "tipoDte": 39,
+    "fechaEmision": "2026-10-17",
+    "formaPago": 1,
+    "referenciaExterna": "POS-CAJA1-55421",
+    "receptor": {
+      "rut": "1-9",
+      "razonSocial": "Cliente genérico"
+    },
+    "items": [
+      {
+        "nombre": "Venta mostrador",
+        "cantidad": 1,
+        "precio": 11900,
+        "exento": false
+      }
+    ]
+  }'</code></pre>
+            <p>
+                En boleta el receptor puede ser RUT <code>1-9</code> (cliente genérico).
+                <code>precio</code> es neto unitario: 11.900 neto → IVA 2.261 → total 14.161.
+            </p>
+
+            <h3>Nota de crédito (61)</h3>
+            <p>Obligatorio informar el documento origen en <code>referencias</code>.</p>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "tipoDte": 61,
+    "fechaEmision": "2026-10-18",
+    "formaPago": 2,
+    "referenciaExterna": "ERP-NC-9988-1",
+    "receptor": {
+      "rut": "76123456-0",
+      "razonSocial": "Cliente Demo SpA",
+      "giro": "Comercio al por mayor",
+      "direccion": "Av. Apoquindo 100",
+      "comuna": "Las Condes",
+      "ciudad": "Santiago"
+    },
+    "items": [
+      {
+        "codigo": "SKU-01",
+        "nombre": "Anulación servicio de consultoría",
+        "cantidad": 1,
+        "unidad": "UN",
+        "precio": 100000,
+        "exento": false
+      }
+    ],
+    "referencias": [
+      {
+        "tipoDoc": "33",
+        "folio": "14503",
+        "fecha": "2026-10-17",
+        "razon": "Anula documento por error de facturación"
+      }
+    ]
+  }'</code></pre>
+            <p>La nota de débito (56) usa el mismo esquema de <code>referencias</code>.</p>
+
+            <h3>JavaScript (secuencia completa)</h3>
+<pre><code>async function emitirFactura33() {
+const BASE = 'https://saas.diffsii.cl';
+const COMPANY_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+
+const login = await fetch(`${BASE}/api/auth/login-local`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'integracion@tuempresa.cl',
+    password: 'tu_password_segura'
+  })
+}).then((r) => r.json());
+
+const headers = {
+  Authorization: `Bearer ${login.token}`,
+  'Content-Type': 'application/json',
+  'X-Company-ID': COMPANY_ID
+};
+
+const emitido = await fetch(`${BASE}/api/integration/companies/${COMPANY_ID}/dte`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    tipoDte: 33,
+    fechaEmision: '2026-10-17',
+    fechaVencimiento: '2026-11-16',
+    formaPago: 2,
+    referenciaExterna: 'ERP-OC-9988',
+    receptor: {
+      rut: '76123456-0',
+      razonSocial: 'Cliente Demo SpA',
+      giro: 'Comercio al por mayor',
+      direccion: 'Av. Apoquindo 100',
+      comuna: 'Las Condes',
+      ciudad: 'Santiago'
+    },
+    items: [
+      { codigo: 'SKU-01', nombre: 'Servicio de consultoría', cantidad: 1, unidad: 'UN', precio: 100000 }
+    ]
+  })
+}).then((r) => r.json());
+
+console.log(emitido.folio, emitido.trackId, emitido.pdfUrl);
+
+const consulta = await fetch(
+  `${BASE}/api/integration/companies/${COMPANY_ID}/dte/${emitido.tipoDte}/${emitido.folio}`,
+  { headers }
+).then((r) => r.json());
+
+const pdf = await fetch(emitido.pdfUrl);
+const blob = await pdf.blob();
+return { emitido, consulta, blob };
+}
+
+emitirFactura33();</code></pre>
+
+            <h2 id="campos">Campos</h2>
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>Campo</th>
+                        <th>Obligatorio</th>
+                        <th>Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>tipoDte</code></td>
+                        <td>Sí</td>
+                        <td>33, 34, 39, 41, 46, 52, 56, 61</td>
+                    </tr>
+                    <tr>
+                        <td><code>receptor.rut</code></td>
+                        <td>Sí</td>
+                        <td>Con o sin puntos. Se valida dígito verificador.</td>
+                    </tr>
+                    <tr>
+                        <td><code>receptor.razonSocial</code></td>
+                        <td>Sí*</td>
+                        <td>Puede omitirse si el RUT ya existe en Clientes de DiffSii.</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].nombre</code></td>
+                        <td>Sí</td>
+                        <td>Descripción del detalle</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].cantidad</code></td>
+                        <td>Sí</td>
+                        <td>Default 1</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].precio</code></td>
+                        <td>Sí</td>
+                        <td>Entero CLP, neto unitario</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].exento</code></td>
+                        <td>No</td>
+                        <td><code>true</code> para líneas no afectas</td>
+                    </tr>
+                    <tr>
+                        <td><code>fechaEmision</code></td>
+                        <td>No</td>
+                        <td>YYYY-MM-DD. Default: hoy</td>
+                    </tr>
+                    <tr>
+                        <td><code>formaPago</code></td>
+                        <td>No</td>
+                        <td>1 contado, 2 crédito, 3 sin costo. Default 2</td>
+                    </tr>
+                    <tr>
+                        <td><code>referencias</code></td>
+                        <td>56 y 61</td>
+                        <td>Documento origen: tipoDoc, folio, fecha, razon</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="respuesta">Respuesta 201 y PDF</h2>
+            <p>Respuesta del ejemplo de factura 33 (ítem 100.000 + 4×25.000 con 10% dto. = neto 190.000):</p>
+<pre><code>{
+  "exito": true,
+  "folio": 14503,
+  "tipoDte": 33,
+  "trackId": "1234567890",
+  "estado": "ENVIADO",
+  "modalidad": "software_mercado",
+  "fechaEmision": "2026-10-17",
+  "receptor": {
+    "rut": "76123456-0",
+    "razonSocial": "Cliente Demo SpA"
+  },
+  "totales": {
+    "neto": 190000,
+    "exento": 0,
+    "iva": 36100,
+    "total": 226100
+  },
+  "referenciaExterna": "ERP-OC-9988",
+  "documentoId": "4c8a1d2e-9b70-4f11-8c22-0aa1bb2cc3dd",
+  "pdfUrl": "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503/pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "detalle": null
+}</code></pre>
+
+            <p>
+                <code>pdfUrl</code> abre el PDF del DTE. Incluye un token de descarga válido 30 días; no requiere el JWT de sesión.
+            </p>
+            <p>Descarga con el token del link:</p>
+<pre><code>curl -L "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503/pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -o DTE_33_14503.pdf</code></pre>
+            <p>O autenticado con el JWT de integración:</p>
+<pre><code>curl -L "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503/pdf" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -o DTE_33_14503.pdf</code></pre>
+            <div class="endpoint"><span class="method get">GET</span> <strong>/api/integration/companies/{companyId}/dte/{tipoDte}/{folio}/pdf</strong></div>
+            <p>El documento queda registrado en el libro de ventas de DiffSii.</p>
+
+            <h3>Reemisión idempotente (200)</h3>
+            <p>Si vuelves a enviar el mismo <code>referenciaExterna</code>, no se reenvía al SII:</p>
+<pre><code>{
+  "exito": true,
+  "idempotente": true,
+  "folio": 14503,
+  "tipoDte": 33,
+  "trackId": "1234567890",
+  "estado": "Aceptado",
+  "modalidad": "software_mercado",
+  "fechaEmision": "2026-10-17",
+  "receptor": { "rut": "76123456-0", "razonSocial": "Cliente Demo SpA" },
+  "totales": { "neto": 190000, "exento": 0, "iva": 36100, "total": 226100 },
+  "referenciaExterna": "ERP-OC-9988",
+  "documentoId": "4c8a1d2e-9b70-4f11-8c22-0aa1bb2cc3dd",
+  "pdfUrl": "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503/pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "detalle": "Documento ya emitido con esta referenciaExterna. No se volvió a enviar al SII."
+}</code></pre>
+
+            <h2 id="consultar">Consultar un DTE emitido</h2>
+            <div class="endpoint"><span class="method get">GET</span> <strong>/api/integration/companies/{companyId}/dte/{tipoDte}/{folio}</strong></div>
+<pre><code>curl "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+            <p>Respuesta 200:</p>
+<pre><code>{
+  "exito": true,
+  "folio": 14503,
+  "tipoDte": 33,
+  "estado": "Aceptado",
+  "fechaEmision": "2026-10-17",
+  "periodo": "2026-10",
+  "origen": "api",
+  "receptor": { "rut": "76123456-0" },
+  "totales": { "neto": 190000, "exento": 0, "iva": 36100, "total": 226100 },
+  "referenciaExterna": "ERP-OC-9988",
+  "trackId": "1234567890",
+  "documentoId": "4c8a1d2e-9b70-4f11-8c22-0aa1bb2cc3dd",
+  "pdfUrl": "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/33/14503/pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+            <p>Si el DTE no existe:</p>
+<pre><code>{ "error": "Documento no encontrado en DiffSii." }</code></pre>
+
+            <h2 id="folio">Siguiente folio CAF</h2>
+            <div class="endpoint"><span class="method get">GET</span> <strong>/api/integration/companies/{companyId}/dte/siguiente-folio?tipoDte=33</strong></div>
+<pre><code>curl "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte/siguiente-folio?tipoDte=33" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+            <p>Software de Mercado (CAF vigente):</p>
+<pre><code>{
+  "success": true,
+  "tipoDte": 33,
+  "emissionType": "software_mercado",
+  "hasCaf": true,
+  "exhausted": false,
+  "siguienteFolio": 14503,
+  "folioDesde": 14000,
+  "folioHasta": 14999,
+  "totalDisponibles": 497
+}</code></pre>
+            <p>Sistema Gratuito SII / Mipyme:</p>
+<pre><code>{
+  "success": true,
+  "tipoDte": 33,
+  "emissionType": "gratuito_sii",
+  "hasCaf": false,
+  "exhausted": false,
+  "siguienteFolio": 0,
+  "modo": "automatico_sii",
+  "message": "En el Sistema Gratuito SII el folio lo asigna el portal Mipyme al timbrar."
+}</code></pre>
+            <p>Útil para previsualizar el correlativo. En emisión, si no envías <code>folio</code>, DiffSii lo reserva automáticamente.</p>
+
+            <h2 id="errores">Errores de emisión</h2>
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>HTTP</th>
+                        <th>Cuándo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="response-code error" style="margin:0;">400</span></td>
+                        <td>Payload inválido (RUT, ítems, tipoDte, NC/ND sin referencia)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="response-code error" style="margin:0;">401</span></td>
+                        <td>Sin JWT o token expirado</td>
+                    </tr>
+                    <tr>
+                        <td><span class="response-code error" style="margin:0;">403</span></td>
+                        <td>Sin permiso de ventas, empresa ajena o tope del plan</td>
+                    </tr>
+                    <tr>
+                        <td><span class="response-code warning" style="margin:0;">409</span></td>
+                        <td>Periodo cerrado, sin CAF o CAF agotado</td>
+                    </tr>
+                    <tr>
+                        <td><span class="response-code error" style="margin:0;">502</span></td>
+                        <td>El SII rechazó o no confirmó el envío</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>400 — nota de crédito sin documento origen:</p>
+<pre><code>{
+  "error": "Payload de emisión inválido.",
+  "details": [
+    "Las notas de crédito (61) y débito (56) requieren al menos una referencia al documento origen."
+  ]
+}</code></pre>
+            <p>400 — RUT inválido:</p>
+<pre><code>{
+  "error": "Payload de emisión inválido.",
+  "details": ["RUT con dígito verificador incorrecto: 76123456-9"]
+}</code></pre>
+            <p>403:</p>
+<pre><code>{ "error": "Tu cuenta no tiene permisos para emitir ventas." }</code></pre>
+            <p>409 — periodo cerrado:</p>
+<pre><code>{ "error": "El periodo 2026-10 está cerrado. No es posible emitir DTE." }</code></pre>
+            <p>409 — sin CAF:</p>
+<pre><code>{
+  "error": "No hay CAF autorizado para el tipo de documento 33. Sincronice o solicite un CAF al SII.",
+  "code": "SIN_CAF"
+}</code></pre>
+            <p>502 — el SII no confirmó:</p>
+<pre><code>{
+  "exito": false,
+  "folio": 14503,
+  "tipoDte": 33,
+  "trackId": null,
+  "estado": "RECHAZADO",
+  "modalidad": "software_mercado",
+  "fechaEmision": "2026-10-17",
+  "receptor": { "rut": "76123456-0", "razonSocial": "Cliente Demo SpA" },
+  "totales": { "neto": 190000, "exento": 0, "iva": 36100, "total": 226100 },
+  "referenciaExterna": "ERP-OC-9988",
+  "documentoId": null,
+  "pdfUrl": null,
+  "detalle": "El SII rechazó el envío."
+}</code></pre>
+
+            <h2 id="requisitos">Requisitos en DiffSii</h2>
+            <ul>
+                <li>Empresa con certificado digital (Software de Mercado) o clave tributaria (Sistema Gratuito SII / Mipyme).</li>
+                <li>CAF vigente del tipo de documento, si emite por Software de Mercado.</li>
+                <li>Resolución SII y RUT envía configurados en la ficha de la empresa.</li>
+                <li>Usuario con acceso al módulo de ventas.</li>
+            </ul>
+
+            <p>
+                Para inyectar compras/ventas ya emitidas (sin timbrar), usa la
+                <a href="api.html" style="color: var(--primary);">API de movimientos B2B</a>.
+            </p>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a href="index.html" aria-label="DiffSii"><img src="assets/logos/Logo_Fondo_Oscuro.svg" alt="DiffSii" class="footer-logo" width="140" height="45"></a>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Tecnología SaaS para asegurar
+                    la operatividad y compliance tributario de empresas en Chile.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Contacto Comercial</h5>
+                <a href="mailto:contacto@diffsii.cl"><i data-lucide="mail"></i> contacto@diffsii.cl</a>
+                <a href="https://wa.me/56928294494" target="_blank"><i data-lucide="phone"></i> +56 9 2829 4494</a>
+                <a href="nosotros.html">Nosotros / Empresa</a>
+            </div>
+            <div class="footer-col">
+                <h5>Desarrolladores</h5>
+                <a href="api.html">API de movimientos</a>
+                <a href="integracionDTE.html">API de Integración DTE</a>
+                <a href="https://saas.diffsii.cl">Ingreso Cliente (Login)</a>
+            </div>
+            <div class="footer-col">
+                <h5>Legal &amp; Seguridad</h5>
+                <a href="terminos.html">Términos y Condiciones</a>
+                <a href="privacidad.html">Políticas de Privacidad</a>
+                <a href="tratamiento-clave.html">Tratamiento de Clave Tributaria</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 DiffSii Analytics. Documentación técnica de integración DTE.
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
