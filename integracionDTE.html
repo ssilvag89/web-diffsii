@@ -316,6 +316,8 @@
                 <li><a href="#consultar">Consultar DTE</a></li>
                 <li><a href="#folio">Siguiente folio</a></li>
                 <li><a href="#errores">Errores</a></li>
+                <li><a href="#rcv">RCV compras y ventas</a></li>
+                <li><a href="#rcv-partner">RCV Partner</a></li>
                 <li><a href="#requisitos">Requisitos</a></li>
             </ul>
         </aside>
@@ -871,12 +873,157 @@ emitirFactura33();</code></pre>
   "detalle": "El SII rechazó el envío."
 }</code></pre>
 
+            <h2 id="rcv">RCV: compras y ventas del SII</h2>
+            <p>
+                Permite a un partner obtener el Registro de Compras y Ventas de la empresa
+                desde el microservicio SII de DiffSii. El integrador <strong>no</strong> envía
+                clave tributaria: DiffSii autentica al SII con la clave guardada en la ficha
+                de la empresa.
+            </p>
+            <div class="alert-info">
+                <strong>Seguridad:</strong> JWT en header <code>Authorization</code> (no en la URL),
+                membresía a la empresa, permiso de módulo (<code>access_compras</code> /
+                <code>access_ventas</code>) y límite de 40 consultas cada 15 minutos.
+            </div>
+
+            <h3>Listar RCV</h3>
+            <div class="endpoint"><span class="method get">GET</span> <strong>/api/integration/companies/{companyId}/rcv</strong></div>
+            <table class="doc-table">
+                <thead>
+                    <tr><th>Query</th><th>Obligatorio</th><th>Notas</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>tipo</code></td><td>Sí</td><td><code>compras</code> o <code>ventas</code></td></tr>
+                    <tr><td><code>periodo</code></td><td>Sí</td><td>YYYY-MM</td></tr>
+                    <tr><td><code>estado</code></td><td>No</td><td>aceptado, pendiente, rechazado, excluido</td></tr>
+                    <tr><td><code>fuente</code></td><td>No</td><td><code>sii</code> (vivo, default) o <code>cache</code> (última sync en DiffSii)</td></tr>
+                    <tr><td><code>limit</code></td><td>No</td><td>Default 500, máximo 1000</td></tr>
+                    <tr><td><code>offset</code></td><td>No</td><td>Default 0</td></tr>
+                </tbody>
+            </table>
+<pre><code>curl "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/rcv?tipo=compras&amp;periodo=2026-09" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+            <p>Respuesta 200:</p>
+<pre><code>{
+  "exito": true,
+  "tipo": "compras",
+  "periodo": "2026-09",
+  "fuente": "sii",
+  "estado": null,
+  "total": 2,
+  "limit": 500,
+  "offset": 0,
+  "resumen": { "neto": 150000, "exento": 0, "iva": 28500, "total": 178500, "cantidad": 2 },
+  "documentos": [
+    {
+      "tipoDte": 33,
+      "tipoDocumento": "33 - Factura electrónica",
+      "folio": 88,
+      "fechaEmision": "2026-09-02",
+      "rutContraparte": "76543210-K",
+      "razonSocial": "Otro Ltda",
+      "montoNeto": 50000,
+      "montoExento": 0,
+      "montoIva": 9500,
+      "montoTotal": 59500,
+      "estado": "Pendiente",
+      "fechaReclamo": null
+    },
+    {
+      "tipoDte": 33,
+      "tipoDocumento": "33 - Factura electrónica",
+      "folio": 14502,
+      "fechaEmision": "2026-09-15",
+      "rutContraparte": "76123456-0",
+      "razonSocial": "Proveedor SpA",
+      "montoNeto": 100000,
+      "montoExento": 0,
+      "montoIva": 19000,
+      "montoTotal": 119000,
+      "estado": "Aceptado",
+      "fechaReclamo": null
+    }
+  ]
+}</code></pre>
+            <p>Ventas del mismo periodo:</p>
+<pre><code>curl "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/rcv?tipo=ventas&amp;periodo=2026-09&amp;fuente=cache" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+
+            <h3>Detalle de un DTE del RCV</h3>
+            <div class="endpoint"><span class="method get">GET</span> <strong>/api/integration/companies/{companyId}/rcv/detalle</strong></div>
+<pre><code>curl "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/rcv/detalle?tipo=compras&amp;periodo=2026-09&amp;tipoDte=33&amp;folio=14502&amp;rutContraparte=76123456-0" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+            <p>Respuesta 200:</p>
+<pre><code>{
+  "exito": true,
+  "fuente": "sii",
+  "tipo": "compras",
+  "periodo": "2026-09",
+  "tipoDte": 33,
+  "folio": 14502,
+  "rutContraparte": "76123456-0",
+  "detalle": {},
+  "referencias": [],
+  "referenciados": [],
+  "reparos": [],
+  "impuestoAdicional": []
+}</code></pre>
+
+            <h3>Errores RCV</h3>
+<pre><code>{ "error": "El parámetro tipo es obligatorio y debe ser \"compras\" o \"ventas\"." }</code></pre>
+<pre><code>{ "error": "Tu usuario no tiene acceso concedido para solicitar información del módulo de Compras." }</code></pre>
+<pre><code>{
+  "error": "La empresa no tiene clave tributaria configurada. No es posible consultar el RCV en vivo.",
+  "code": "SIN_CLAVE_SII"
+}</code></pre>
+<pre><code>{ "error": "Demasiadas consultas RCV. Espera unos minutos o usa fuente=cache." }</code></pre>
+
+            <h2 id="rcv-partner">RCV Partner (sin companyId)</h2>
+            <p>
+                Para partners que no operan una empresa en DiffSii. Se autentican con una llave
+                emitida por Devint y envían el <code>rut</code> y la <code>claveSii</code> del contribuyente.
+                DiffSii no persiste esa clave. El RUT <code>76.971.597-5</code> está bloqueado.
+            </p>
+            <div class="alert-info">
+                Las llaves se crean en el SaaS: Administración → Llaves Partner (solo empresa Devint),
+                donde también se ve el log de consultas por periodo. Header <code>X-Partner-Key</code>.
+                Límite: 30 consultas / 15 minutos.
+            </div>
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/partners/rcv</strong></div>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/partners/rcv" \
+  -H "X-Partner-Key: dsii_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rut": "76123456-0",
+    "claveSii": "clave_tributaria_del_contribuyente",
+    "tipo": "compras",
+    "periodo": "2026-09"
+  }'</code></pre>
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/partners/rcv/detalle</strong></div>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/partners/rcv/detalle" \
+  -H "X-Partner-Key: dsii_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rut": "76123456-0",
+    "claveSii": "clave_tributaria_del_contribuyente",
+    "tipo": "compras",
+    "periodo": "2026-09",
+    "tipoDte": 33,
+    "folio": 14502,
+    "rutContraparte": "76543210-K"
+  }'</code></pre>
+<pre><code>{ "error": "Este RUT no está habilitado en el servicio partner.", "code": "RUT_BLOQUEADO" }</code></pre>
+
             <h2 id="requisitos">Requisitos en DiffSii</h2>
             <ul>
                 <li>Empresa con certificado digital (Software de Mercado) o clave tributaria (Sistema Gratuito SII / Mipyme).</li>
                 <li>CAF vigente del tipo de documento, si emite por Software de Mercado.</li>
                 <li>Resolución SII y RUT envía configurados en la ficha de la empresa.</li>
-                <li>Usuario con acceso al módulo de ventas.</li>
+                <li>Usuario con acceso al módulo de ventas (emisión) o compras/ventas (RCV).</li>
+                <li>Clave tributaria en la ficha de la empresa para consultar RCV en vivo.</li>
             </ul>
 
             <p>
