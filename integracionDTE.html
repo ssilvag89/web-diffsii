@@ -984,11 +984,11 @@ emitirFactura33();</code></pre>
             <h2 id="rcv-partner">RCV Partner (sin companyId)</h2>
             <p>
                 Para partners que no operan una empresa en DiffSii. Se autentican con una llave
-                emitida por Devint y envían el <code>rut</code> y la <code>claveSii</code> del contribuyente.
-                DiffSii no persiste esa clave. El RUT <code>76.971.597-5</code> está bloqueado.
+                emitida por la administración de DiffSii y envían el <code>rut</code> y la <code>claveSii</code> del contribuyente.
+                DiffSii no persiste esa clave. Cada llave solo consulta los RUT que tenga previamente autorizados.
             </p>
             <div class="alert-info">
-                Las llaves se crean en el SaaS: Administración → Llaves Partner (solo empresa Devint),
+                Las llaves se gestionan en el SaaS: Administración → Llaves Partner (solo usuarios administradores autorizados),
                 donde también se ve el log de consultas por periodo. Header <code>X-Partner-Key</code>.
                 Límite: 30 consultas / 15 minutos.
             </div>
@@ -1016,6 +1016,7 @@ emitirFactura33();</code></pre>
     "rutContraparte": "76543210-K"
   }'</code></pre>
 <pre><code>{ "error": "Este RUT no está habilitado en el servicio partner.", "code": "RUT_BLOQUEADO" }</code></pre>
+<pre><code>{ "error": "Este RUT no está asociado a la llave partner.", "code": "RUT_NO_AUTORIZADO" }</code></pre>
 
             <h2 id="requisitos">Requisitos en DiffSii</h2>
             <ul>
