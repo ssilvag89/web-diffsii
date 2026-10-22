@@ -232,6 +232,7 @@
                         <li><a href="#export-responses" style="font-size: 0.85rem; padding: 6px 12px; color: var(--text-muted);">&bull; Códigos de Error GET</a></li>
                     </ul>
                 </li>
+                <li><a href="#partner-clients">4. API Partner: Registro Clientes</a></li>
             </ul>
         </aside>
 
@@ -404,6 +405,98 @@
 
         <span class="response-code error" style="margin-top: 30px; display: block;">500 Internal Server Error</span>
         <p>Ocurre si hay un problema de conexión con la base de datos o un error inesperado al procesar la solicitud en el servidor.</p>
+
+        <h2 id="partner-clients">4. API Partner: Registro de Clientes</h2>
+        <p>
+            Permite a nuestros partners aprovisionar nuevos clientes (empresas) de forma programática.
+            La empresa queda creada y habilitada, el usuario administrador recibe su enlace de bienvenida
+            para activar su contraseña, y el RUT de la empresa queda <strong>inmediatamente autorizado en la llave partner</strong>
+            para realizar consultas RCV.
+        </p>
+
+        <h3>Endpoint</h3>
+        <div class="endpoint"><span class="method">POST</span> <strong>/api/partners/clients</strong></div>
+
+        <h3>Headers Requeridos</h3>
+        <ul>
+            <li><code>X-Partner-Key: dsii_tu_llave_partner_aqui</code> (o <code>Authorization: Bearer dsii_...</code>)</li>
+            <li><code>Content-Type: application/json</code></li>
+        </ul>
+
+        <h3>Parámetros del Request (JSON)</h3>
+        <p>Todos los datos operativos y tributarios de la empresa son <strong>obligatorios</strong> para garantizar la emisión y sincronización automática.</p>
+        <ul>
+            <li><strong>rut:</strong> (Obligatorio) RUT chileno válido de la empresa (ej: "76.123.456-0").</li>
+            <li><strong>razonSocial:</strong> (Obligatorio) Nombre legal o razón social (alias: <code>name</code>).</li>
+            <li><strong>giro:</strong> (Obligatorio) Actividad o giro comercial de la empresa.</li>
+            <li><strong>acteco:</strong> (Obligatorio) Código de actividad económica tributaria del SII (ej: "620100").</li>
+            <li><strong>direccion:</strong> (Obligatorio) Domicilio comercial (alias: <code>address</code>).</li>
+            <li><strong>comuna:</strong> (Obligatorio) Comuna tributaria.</li>
+            <li><strong>ciudad:</strong> (Obligatorio) Ciudad tributaria (alias: <code>city</code>).</li>
+            <li><strong>telefono:</strong> (Obligatorio) Teléfono de contacto comercial.</li>
+            <li><strong>userEmail:</strong> (Obligatorio) Correo del administrador de la cuenta (recibe enlace para activar su contraseña).</li>
+            <li><strong>siiPassword:</strong> (Obligatorio) Clave tributaria del SII para sincronizaciones periódicas automatizadas.</li>
+            <li><strong>certificate:</strong> (Obligatorio) Certificado digital en formato <strong>PFX/P12 en base64</strong> (alias: <code>certificado</code>, <code>certificateBase64</code>).</li>
+            <li><strong>certificatePass:</strong> (Obligatorio) Contraseña del certificado digital (validada criptográficamente).</li>
+            <li><strong>certificateName:</strong> (Opcional) Nombre original del archivo (ej: "certificado.pfx").</li>
+            <li><strong>userName:</strong> (Opcional) Nombre del administrador (por defecto toma la razón social).</li>
+            <li><strong>plan:</strong> (Opcional) "basico", "start" (por defecto), "prime" o "enterprise".</li>
+        </ul>
+
+        <h3>Ejemplo cURL</h3>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/partners/clients" \
+  -H "X-Partner-Key: dsii_tu_llave_partner_aqui" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rut": "76.123.456-0",
+    "razonSocial": "Comercializadora del Sur SpA",
+    "giro": "Venta al por mayor de maquinaria",
+    "acteco": "465900",
+    "direccion": "Av. Apoquindo 4500 Of 1201",
+    "comuna": "Las Condes",
+    "ciudad": "Santiago",
+    "telefono": "+56987654321",
+    "userEmail": "admin@comercializadoradelsur.cl",
+    "userName": "Juan Pérez",
+    "siiPassword": "clave_tributaria_sii",
+    "certificate": "MIACA...base64_del_certificado_pfx...",
+    "certificatePass": "password_del_certificado",
+    "certificateName": "certificado.pfx",
+    "plan": "prime"
+  }'</code></pre>
+
+        <span class="response-code success">201 Created (Éxito)</span>
+<pre><code>{
+  "ok": true,
+  "message": "Cliente registrado con éxito y autorizado para la llave partner.",
+  "partnerKey": {
+    "id": "160960cb-f26d-4249-9722-0e3d80914b88",
+    "name": "ERP Partner",
+    "keyPrefix": "dsii_GZoCToE"
+  },
+  "client": {
+    "companyId": "157baebc-5d21-49dd-80ee-0615fb814f3f",
+    "rut": "76123456-0",
+    "razonSocial": "Comercializadora del Sur SpA",
+    "giro": "Venta al por mayor de maquinaria",
+    "acteco": "465900",
+    "direccion": "Av. Apoquindo 4500 Of 1201",
+    "comuna": "Las Condes",
+    "ciudad": "Santiago",
+    "telefono": "+56987654321",
+    "plan": "prime",
+    "status": "active",
+    "hasSiiPassword": true,
+    "user": {
+      "id": "fefc838a-e33c-46c8-9f2a-bcc8fdb4181a",
+      "email": "admin@comercializadoradelsur.cl",
+      "name": "Juan Pérez",
+      "isNewUser": true
+    },
+    "partnerRcvAuthorized": true
+  }
+}</code></pre>
+
 
     </main>
     </div>

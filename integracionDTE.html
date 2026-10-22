@@ -317,7 +317,8 @@
                 <li><a href="#folio">Siguiente folio</a></li>
                 <li><a href="#errores">Errores</a></li>
                 <li><a href="#rcv">RCV compras y ventas</a></li>
-                <li><a href="#rcv-partner">RCV Partner</a></li>
+                <li><a href="#partner-clientes">Partner: Registrar Clientes</a></li>
+                <li><a href="#rcv-partner">Partner: Consultas RCV</a></li>
                 <li><a href="#requisitos">Requisitos</a></li>
             </ul>
         </aside>
@@ -980,6 +981,111 @@ emitirFactura33();</code></pre>
   "code": "SIN_CLAVE_SII"
 }</code></pre>
 <pre><code>{ "error": "Demasiadas consultas RCV. Espera unos minutos o usa fuente=cache." }</code></pre>
+
+            <h2 id="partner-clientes">API Partner: Registro de Clientes</h2>
+            <p>
+                Permite a nuestros partners registrar y aprovisionar empresas clientes de manera 100% automatizada a través de API,
+                sin requerir acceso manual a la interfaz.
+            </p>
+            <p>
+                La empresa queda creada y habilitada, el usuario administrador queda asociado con rol admin
+                (recibiendo un enlace por correo para establecer su contraseña), y el RUT de la empresa queda <strong>inmediatamente autorizado</strong>
+                en la llave partner para consultar el RCV u operar sin autorizaciones adicionales.
+            </p>
+
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/partners/clients</strong></div>
+
+            <h3>Headers Requeridos</h3>
+            <ul>
+                <li><code>X-Partner-Key: dsii_tu_llave_partner_aqui</code> (o <code>Authorization: Bearer dsii_...</code>)</li>
+                <li><code>Content-Type: application/json</code></li>
+            </ul>
+
+            <h3>Estructura del Request (JSON)</h3>
+            <pre><code>curl -X POST "https://saas.diffsii.cl/api/partners/clients" \
+  -H "X-Partner-Key: dsii_tu_llave_partner_aqui" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rut": "76.123.456-0",
+    "razonSocial": "Comercializadora del Sur SpA",
+    "giro": "Venta al por mayor de maquinaria",
+    "acteco": "465900",
+    "direccion": "Av. Apoquindo 4500 Of 1201",
+    "comuna": "Las Condes",
+    "ciudad": "Santiago",
+    "telefono": "+56987654321",
+    "userEmail": "admin@comercializadoradelsur.cl",
+    "userName": "Juan Pérez",
+    "siiPassword": "clave_tributaria_sii",
+    "certificate": "MIACA...base64_del_certificado_pfx...",
+    "certificatePass": "password_del_certificado",
+    "certificateName": "certificado.pfx",
+    "plan": "prime"
+  }'</code></pre>
+
+            <h3>Parámetros del Request</h3>
+            <table class="doc-table">
+                <thead>
+                    <tr><th>BODY (JSON)</th><th>OBLIGATORIO</th><th>NOTAS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>rut</code></td><td>Sí</td><td>RUT chileno con o sin puntos y con guion. Validado con algoritmo módulo 11.</td></tr>
+                    <tr><td><code>razonSocial</code></td><td>Sí</td><td>Razón social o nombre legal de la empresa (también acepta <code>name</code>).</td></tr>
+                    <tr><td><code>giro</code></td><td>Sí</td><td>Giro o actividad comercial de la empresa.</td></tr>
+                    <tr><td><code>acteco</code></td><td>Sí</td><td>Código de actividad económica tributaria del SII (ej: <code>"620100"</code>).</td></tr>
+                    <tr><td><code>direccion</code></td><td>Sí</td><td>Dirección o domicilio comercial (también acepta <code>address</code>).</td></tr>
+                    <tr><td><code>comuna</code></td><td>Sí</td><td>Comuna tributaria de la empresa.</td></tr>
+                    <tr><td><code>ciudad</code></td><td>Sí</td><td>Ciudad tributaria de la empresa (también acepta <code>city</code>).</td></tr>
+                    <tr><td><code>telefono</code></td><td>Sí</td><td>Teléfono de contacto comercial.</td></tr>
+                    <tr><td><code>userEmail</code></td><td>Sí</td><td>Correo electrónico del usuario que administrará la empresa. Recibe correo para fijar contraseña.</td></tr>
+                    <tr><td><code>siiPassword</code></td><td>Sí</td><td>Clave tributaria del SII para sincronizaciones periódicas automatizadas.</td></tr>
+                    <tr><td><code>certificate</code></td><td>Sí</td><td>Certificado digital en formato <code>PFX</code> o <code>P12</code> codificado en Base64 (acepta <code>certificado</code> o <code>certificateBase64</code>).</td></tr>
+                    <tr><td><code>certificatePass</code></td><td>Sí</td><td>Contraseña para abrir el certificado digital (se valida criptográficamente al registrar).</td></tr>
+                    <tr><td><code>certificateName</code></td><td>No</td><td>Nombre original del archivo (ej: <code>"firma_representante.pfx"</code>).</td></tr>
+                    <tr><td><code>userName</code></td><td>No</td><td>Nombre del administrador (por defecto toma la razón social).</td></tr>
+                    <tr><td><code>plan</code></td><td>No</td><td><code>basico</code>, <code>start</code> (default), <code>prime</code> o <code>enterprise</code>.</td></tr>
+                </tbody>
+            </table>
+
+            <span class="response-code success">Respuesta Exitosa (201 Created)</span>
+            <pre><code>{
+  "ok": true,
+  "message": "Cliente registrado con éxito y autorizado para la llave partner.",
+  "partnerKey": {
+    "id": "160960cb-f26d-4249-9722-0e3d80914b88",
+    "name": "ERP Partner",
+    "keyPrefix": "dsii_GZoCToE"
+  },
+  "client": {
+    "companyId": "157baebc-5d21-49dd-80ee-0615fb814f3f",
+    "rut": "76123456-0",
+    "razonSocial": "Comercializadora del Sur SpA",
+    "giro": "Venta al por mayor de maquinaria",
+    "acteco": "465900",
+    "direccion": "Av. Apoquindo 4500 Of 1201",
+    "comuna": "Las Condes",
+    "ciudad": "Santiago",
+    "telefono": "+56987654321",
+    "plan": "prime",
+    "status": "active",
+    "hasSiiPassword": true,
+    "user": {
+      "id": "fefc838a-e33c-46c8-9f2a-bcc8fdb4181a",
+      "email": "admin@comercializadoradelsur.cl",
+      "name": "Juan Pérez",
+      "isNewUser": true
+    },
+    "partnerRcvAuthorized": true
+  }
+}</code></pre>
+
+            <span class="response-code error">Códigos de Error</span>
+            <pre><code>{ "error": "El campo rut es obligatorio.", "code": "RUT_REQUERIDO" }</code></pre>
+            <pre><code>{ "error": "El RUT no es válido. Revisa el formato y dígito verificador.", "code": "RUT_INVALIDO" }</code></pre>
+            <pre><code>{ "error": "El RUT está reservado y no puede registrarse como cliente.", "code": "RUT_BLOQUEADO" }</code></pre>
+            <pre><code>{ "error": "El campo razonSocial es obligatorio.", "code": "RAZON_SOCIAL_REQUERIDA" }</code></pre>
+            <pre><code>{ "error": "El campo userEmail es obligatorio y debe ser un correo electrónico válido.", "code": "EMAIL_INVALIDO" }</code></pre>
+            <pre><code>{ "error": "Llave partner ausente o inválida. Envía X-Partner-Key." }</code></pre>
 
             <h2 id="rcv-partner">RCV Partner (sin companyId)</h2>
             <p>
