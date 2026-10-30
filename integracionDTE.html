@@ -319,6 +319,7 @@
                 <li><a href="#rcv">RCV compras y ventas</a></li>
                 <li><a href="#partner-clientes">Partner: Registrar Clientes</a></li>
                 <li><a href="#rcv-partner">Partner: Consultas RCV</a></li>
+                <li><a href="#partner-dte">Partner: Emitir DTE</a></li>
                 <li><a href="#requisitos">Requisitos</a></li>
             </ul>
         </aside>
@@ -340,11 +341,12 @@
 
             <div class="alert-info">
                 <strong>El integrador no envía XML ni firma.</strong> Tampoco debe mandar datos del emisor: se toman de la ficha de la empresa en DiffSii.
+                Esa ficha debe tener giro, actividad económica, dirección y comuna. Si falta alguno, la API responde 400 y no timbra.
             </div>
 
             <h2 id="flujo">Qué hace DiffSii en cada emisión</h2>
             <ol>
-                <li>Valida el payload (RUT, tipo DTE, ítems, referencias).</li>
+                <li>Valida el payload (RUT, tipo DTE, ítems, receptor, guía y código de referencia en notas).</li>
                 <li>Completa el emisor desde la empresa autenticada.</li>
                 <li>Reserva el siguiente folio CAF (Software de Mercado) o deja que Mipyme lo asigne.</li>
                 <li>Firma, timbra (TED) y envía el sobre al SII.</li>
@@ -419,6 +421,7 @@
       "direccion": "Av. Apoquindo 100",
       "comuna": "Las Condes",
       "ciudad": "Santiago",
+      "email": "compras@clientedemo.cl",
       "contacto": "compras@clientedemo.cl"
     },
     "items": [
@@ -528,12 +531,57 @@
     ]
   }'</code></pre>
             <p>
-                En boleta el receptor puede ser RUT <code>1-9</code> (cliente genérico).
+                En boleta el receptor puede ser RUT <code>1-9</code> (cliente genérico) y no exige giro, dirección ni comuna.
                 <code>precio</code> es neto unitario: 11.900 neto → IVA 2.261 → total 14.161.
+                <code>indServicio</code> es opcional: 1 periódicos, 2 servicios, 3 ventas y servicios, 4 espectáculo. Si se omite, queda en 3.
+                Con <code>"montoBruto": true</code> el precio ya incluye IVA y DiffSii separa neto e impuesto.
+            </p>
+
+            <h3>Guía de despacho (52)</h3>
+            <p>
+                <code>indTraslado</code> va de 1 a 9. Si se omite, DiffSii envía 1 (la operación constituye venta).
+                <code>tipoDespacho</code> es opcional: 1 por cuenta del receptor, 2 por cuenta del emisor, 3 del emisor a otras instalaciones.
+            </p>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -H "X-Company-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -d '{
+    "tipoDte": 52,
+    "fechaEmision": "2026-10-17",
+    "formaPago": 1,
+    "indTraslado": 5,
+    "tipoDespacho": 2,
+    "referenciaExterna": "ERP-GUIA-440",
+    "receptor": {
+      "rut": "76123456-0",
+      "razonSocial": "Cliente Demo SpA",
+      "giro": "Comercio al por mayor",
+      "direccion": "Av. Apoquindo 100",
+      "comuna": "Las Condes",
+      "ciudad": "Santiago"
+    },
+    "items": [
+      {
+        "codigo": "SKU-01",
+        "nombre": "Traslado interno de mercadería",
+        "cantidad": 3,
+        "unidad": "UN",
+        "precio": 10000
+      }
+    ]
+  }'</code></pre>
+            <p>
+                Indicadores de traslado: 1 venta, 2 ventas por efectuar, 3 consignación, 4 entrega gratuita,
+                5 traslados internos, 6 otros traslados no venta, 7 devolución, 8 traslado para exportación, 9 venta para exportación.
             </p>
 
             <h3>Nota de crédito (61)</h3>
-            <p>Obligatorio informar el documento origen en <code>referencias</code>.</p>
+            <p>
+                Obligatorio informar el documento origen en <code>referencias</code>, con <code>codigo</code>
+                (1 anula, 2 corrige texto, 3 corrige monto) y <code>fecha</code>.
+                El receptor exige giro, dirección y comuna, igual que la factura.
+            </p>
 <pre><code>curl -X POST "https://saas.diffsii.cl/api/integration/companies/a1b2c3d4-e5f6-7890-abcd-ef1234567890/dte" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
   -H "Content-Type: application/json" \
@@ -566,11 +614,52 @@
         "tipoDoc": "33",
         "folio": "14503",
         "fecha": "2026-10-17",
+        "codigo": "1",
         "razon": "Anula documento por error de facturación"
       }
     ]
   }'</code></pre>
             <p>La nota de débito (56) usa el mismo esquema de <code>referencias</code>.</p>
+
+            <h3>Descuentos, recargos e impuestos</h3>
+            <p>
+                El precio de la línea es neto. El descuento o recargo de la línea puede ir en porcentaje
+                (<code>descuentoPct</code>, <code>recargoPct</code>) o en pesos (<code>descuentoMonto</code>, <code>recargoMonto</code>).
+                El ajuste global usa <code>descuentoGlobalPct</code> o <code>descuentoGlobalMonto</code>, y
+                <code>recargoGlobalPct</code> o <code>recargoGlobalMonto</code>. Envía solo una forma por ajuste, no ambas.
+                <code>codImpAdic</code> marca el impuesto de la línea. <code>impuestosRetenidos</code> es un arreglo
+                <code>{ "tipo", "tasa", "monto" }</code> y se suma al total; en la factura de compra (46) informa el IVA retenido.
+                <code>tipoTranVenta</code> (o <code>indVenta</code>) es 1 del giro, 2 activo fijo o 3 bienes raíces.
+            </p>
+<pre><code>{
+  "tipoDte": 33,
+  "montoBruto": false,
+  "tipoTranVenta": 1,
+  "descuentoGlobalMonto": 5000,
+  "receptor": {
+    "rut": "76123456-0",
+    "razonSocial": "Cliente Demo SpA",
+    "giro": "Comercio al por mayor",
+    "direccion": "Av. Apoquindo 100",
+    "comuna": "Las Condes",
+    "email": "compras@clientedemo.cl"
+  },
+  "items": [
+    {
+      "codigo": "SKU-01",
+      "tipoCodigo": "INT1",
+      "nombre": "Servicio de consultoría",
+      "descripcion": "Mes de octubre, según orden de compra 9988",
+      "cantidad": 1,
+      "precio": 100000,
+      "descuentoMonto": 10000,
+      "codImpAdic": "27"
+    }
+  ],
+  "impuestosRetenidos": [
+    { "tipo": "15", "tasa": 19, "monto": 17100 }
+  ]
+}</code></pre>
 
             <h3>JavaScript (secuencia completa)</h3>
 <pre><code>async function emitirFactura33() {
@@ -655,6 +744,26 @@ emitirFactura33();</code></pre>
                         <td>Puede omitirse si el RUT ya existe en Clientes de DiffSii.</td>
                     </tr>
                     <tr>
+                        <td><code>receptor.giro</code></td>
+                        <td>33, 34, 46, 52, 56, 61</td>
+                        <td>Opcional en boleta 39 y 41.</td>
+                    </tr>
+                    <tr>
+                        <td><code>receptor.direccion</code></td>
+                        <td>33, 34, 46, 52, 56, 61</td>
+                        <td>Si el RUT ya está en Clientes, se completa desde la ficha.</td>
+                    </tr>
+                    <tr>
+                        <td><code>receptor.comuna</code></td>
+                        <td>33, 34, 46, 52, 56, 61</td>
+                        <td>Igual que la dirección.</td>
+                    </tr>
+                    <tr>
+                        <td><code>receptor.email</code></td>
+                        <td>No</td>
+                        <td>Correo del receptor. Si omites <code>contacto</code>, el correo también se usa como contacto.</td>
+                    </tr>
+                    <tr>
                         <td><code>items[].nombre</code></td>
                         <td>Sí</td>
                         <td>Descripción del detalle</td>
@@ -667,12 +776,32 @@ emitirFactura33();</code></pre>
                     <tr>
                         <td><code>items[].precio</code></td>
                         <td>Sí</td>
-                        <td>Entero CLP, neto unitario</td>
+                        <td>Entero CLP, neto unitario. Con <code>montoBruto: true</code> ya incluye IVA.</td>
                     </tr>
                     <tr>
                         <td><code>items[].exento</code></td>
                         <td>No</td>
-                        <td><code>true</code> para líneas no afectas</td>
+                        <td><code>true</code> para líneas no afectas dentro de un documento afecto</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].descuentoPct</code> / <code>descuentoMonto</code></td>
+                        <td>No</td>
+                        <td>Descuento de la línea en porcentaje o en pesos</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].recargoPct</code> / <code>recargoMonto</code></td>
+                        <td>No</td>
+                        <td>Recargo de la línea</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].descripcion</code></td>
+                        <td>No</td>
+                        <td>Texto largo, distinto del nombre</td>
+                    </tr>
+                    <tr>
+                        <td><code>items[].codImpAdic</code></td>
+                        <td>No</td>
+                        <td>Código de impuesto o retención de la línea</td>
                     </tr>
                     <tr>
                         <td><code>fechaEmision</code></td>
@@ -685,9 +814,49 @@ emitirFactura33();</code></pre>
                         <td>1 contado, 2 crédito, 3 sin costo. Default 2</td>
                     </tr>
                     <tr>
+                        <td><code>montoBruto</code></td>
+                        <td>No</td>
+                        <td><code>true</code> si los precios ya incluyen IVA</td>
+                    </tr>
+                    <tr>
+                        <td><code>descuentoGlobalPct</code> o <code>descuentoGlobalMonto</code></td>
+                        <td>No</td>
+                        <td>Envía solo uno de los dos</td>
+                    </tr>
+                    <tr>
+                        <td><code>recargoGlobalPct</code> o <code>recargoGlobalMonto</code></td>
+                        <td>No</td>
+                        <td>Envía solo uno de los dos</td>
+                    </tr>
+                    <tr>
+                        <td><code>indTraslado</code></td>
+                        <td>Guía 52</td>
+                        <td>1 a 9. Si se omite, queda en 1 (venta)</td>
+                    </tr>
+                    <tr>
+                        <td><code>tipoDespacho</code></td>
+                        <td>No</td>
+                        <td>Solo guía: 1 receptor, 2 emisor, 3 emisor a otras instalaciones</td>
+                    </tr>
+                    <tr>
+                        <td><code>indServicio</code></td>
+                        <td>No</td>
+                        <td>Boleta: 1, 2, 3 o 4. Default 3</td>
+                    </tr>
+                    <tr>
+                        <td><code>tipoTranVenta</code></td>
+                        <td>No</td>
+                        <td>1 del giro, 2 activo fijo, 3 bienes raíces. Alias: <code>indVenta</code></td>
+                    </tr>
+                    <tr>
                         <td><code>referencias</code></td>
                         <td>56 y 61</td>
-                        <td>Documento origen: tipoDoc, folio, fecha, razon</td>
+                        <td><code>tipoDoc</code>, <code>folio</code>, <code>fecha</code> y <code>codigo</code> (1 anula, 2 corrige texto, 3 corrige monto)</td>
+                    </tr>
+                    <tr>
+                        <td><code>impuestosRetenidos</code></td>
+                        <td>No</td>
+                        <td>Arreglo <code>tipo</code>, <code>tasa</code>, <code>monto</code>. En la factura de compra (46) informa el IVA retenido.</td>
                     </tr>
                 </tbody>
             </table>
@@ -815,7 +984,7 @@ emitirFactura33();</code></pre>
                 <tbody>
                     <tr>
                         <td><span class="response-code error" style="margin:0;">400</span></td>
-                        <td>Payload inválido (RUT, ítems, tipoDte, NC/ND sin referencia)</td>
+                        <td>Payload inválido: RUT, ítems, receptor incompleto, guía, nota sin código o fecha, emisor sin giro o dirección</td>
                     </tr>
                     <tr>
                         <td><span class="response-code error" style="margin:0;">401</span></td>
@@ -836,12 +1005,26 @@ emitirFactura33();</code></pre>
                 </tbody>
             </table>
 
-            <p>400 — nota de crédito sin documento origen:</p>
+            <p>400 — nota de crédito sin código de referencia:</p>
 <pre><code>{
   "error": "Payload de emisión inválido.",
   "details": [
-    "Las notas de crédito (61) y débito (56) requieren al menos una referencia al documento origen."
+    "referencias[0].codigo debe ser 1 (anula), 2 (corrige texto) o 3 (corrige monto)."
   ]
+}</code></pre>
+            <p>400 — factura sin giro, dirección o comuna del receptor:</p>
+<pre><code>{
+  "error": "Payload de emisión inválido.",
+  "details": [
+    "receptor.giro es obligatorio para este tipo de documento.",
+    "receptor.direccion es obligatorio para este tipo de documento.",
+    "receptor.comuna es obligatorio para este tipo de documento."
+  ]
+}</code></pre>
+            <p>400 — la ficha de la empresa emisora está incompleta:</p>
+<pre><code>{
+  "error": "Payload de emisión inválido.",
+  "details": ["La empresa emisora no tiene giro cargado."]
 }</code></pre>
             <p>400 — RUT inválido:</p>
 <pre><code>{
@@ -1124,9 +1307,40 @@ emitirFactura33();</code></pre>
 <pre><code>{ "error": "Este RUT no está habilitado en el servicio partner.", "code": "RUT_BLOQUEADO" }</code></pre>
 <pre><code>{ "error": "Este RUT no está asociado a la llave partner.", "code": "RUT_NO_AUTORIZADO" }</code></pre>
 
+            <h2 id="partner-dte">Emitir DTE con llave partner</h2>
+            <p>
+                El mismo documento de las secciones anteriores se envía a
+                <code>POST /api/partners/dte</code> con el header <code>X-Partner-Key</code>.
+                Agrega <code>emisor.rut</code>: debe estar autorizado en la llave y existir como empresa en DiffSii.
+                Giro, dirección, comuna, guía, código de la nota, precios brutos, descuentos y recargos se validan igual.
+            </p>
+            <div class="endpoint"><span class="method">POST</span> <strong>/api/partners/dte</strong></div>
+<pre><code>curl -X POST "https://saas.diffsii.cl/api/partners/dte" \
+  -H "X-Partner-Key: dsii_tu_llave_partner_aqui" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emisor": { "rut": "76.123.456-0" },
+    "tipoDte": 33,
+    "formaPago": 1,
+    "receptor": {
+      "rut": "76.543.210-K",
+      "razonSocial": "Cliente Ejemplo SpA",
+      "giro": "Servicios de consultoría",
+      "direccion": "Av. Vitacura 2670",
+      "comuna": "Las Condes",
+      "ciudad": "Santiago",
+      "email": "compras@ejemplo.cl"
+    },
+    "items": [
+      { "nombre": "Servicio de integración API", "cantidad": 1, "precio": 150000 }
+    ],
+    "referenciaExterna": "ERP-FAC-2026-001"
+  }'</code></pre>
+
             <h2 id="requisitos">Requisitos en DiffSii</h2>
             <ul>
                 <li>Empresa con certificado digital (Software de Mercado) o clave tributaria (Sistema Gratuito SII / Mipyme).</li>
+                <li>Ficha del emisor con giro, actividad económica, dirección y comuna.</li>
                 <li>CAF vigente del tipo de documento, si emite por Software de Mercado.</li>
                 <li>Resolución SII y RUT envía configurados en la ficha de la empresa.</li>
                 <li>Usuario con acceso al módulo de ventas (emisión) o compras/ventas (RCV).</li>
